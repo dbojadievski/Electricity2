@@ -1,0 +1,127 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="Source Files">
+      <UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
+      <Extensions>cpp;c;cc;cxx;c++;cppm;ixx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
+    </Filter>
+    <Filter Include="Header Files">
+      <UniqueIdentifier>{93995380-89BD-4b04-88EB-625FBE52EBFB}</UniqueIdentifier>
+      <Extensions>h;hh;hpp;hxx;h++;hm;inl;inc;ipp;xsd</Extensions>
+    </Filter>
+    <Filter Include="Resource Files">
+      <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
+      <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
+    </Filter>
+    <Filter Include="Header Files\Core">
+      <UniqueIdentifier>{19d12a42-2941-4ad9-80d2-8620aa9cc721}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Core\Memory">
+      <UniqueIdentifier>{27fef638-68f8-4f20-9231-9bed10fd224e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Core\Memory\UnitTests">
+      <UniqueIdentifier>{97b823b6-e22f-4f0e-b525-0db5e8fdc9e1}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Core\Memory\UnitTests\PtrTypeUnitTests">
+      <UniqueIdentifier>{c8f0e5e9-b45b-4573-a016-4b0098a72357}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Testing">
+      <UniqueIdentifier>{2edf4daf-63e7-4c4f-bebd-27208f11e7ce}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Lib">
+      <UniqueIdentifier>{3acc8f1a-0f7f-4b0b-8a93-a96f264237d4}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Testing">
+      <UniqueIdentifier>{ff300d90-4441-4c96-bfd3-1c13e6d09d8a}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Core\DataStructures">
+      <UniqueIdentifier>{9b01272e-c9e8-4f0f-b49c-d44ea394f6ff}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Core">
+      <UniqueIdentifier>{fecfd239-48c3-4a37-9ce4-4b9eb09f37da}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Core\Memory">
+      <UniqueIdentifier>{9f8adf59-03f7-4039-b51e-8319799a4d94}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Platform">
+      <UniqueIdentifier>{9334c518-4350-4280-b415-264e8dafabfb}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Platform">
+      <UniqueIdentifier>{3545f24c-115d-418f-86a7-0ce0c5a2bba8}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="framework.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="targetver.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Resource.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Electricity2.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="CoreTypes.h">
+      <Filter>Header Files\Core</Filter>
+    </ClInclude>
+    <ClInclude Include="SharedPtr.h">
+      <Filter>Header Files\Core\Memory</Filter>
+    </ClInclude>
+    <ClInclude Include="UniquePtr.h">
+      <Filter>Header Files\Core\Memory</Filter>
+    </ClInclude>
+    <ClInclude Include="PtrTypeUnitTests.h">
+      <Filter>Header Files\Core\Memory\UnitTests\PtrTypeUnitTests</Filter>
+    </ClInclude>
+    <ClInclude Include="UnitTests.h">
+      <Filter>Header Files\Testing</Filter>
+    </ClInclude>
+    <ClInclude Include="FastDelegate.h">
+      <Filter>Header Files\Lib</Filter>
+    </ClInclude>
+    <ClInclude Include="Heap.h">
+      <Filter>Header Files\Core\Memory</Filter>
+    </ClInclude>
+    <ClInclude Include="LinkedList.h">
+      <Filter>Header Files\Core\DataStructures</Filter>
+    </ClInclude>
+    <ClInclude Include="UnitTests_LinkedList.h">
+      <Filter>Header Files\Testing</Filter>
+    </ClInclude>
+    <ClInclude Include="PlatformMemory.h">
+      <Filter>Header Files\Platform</Filter>
+    </ClInclude>
+    <ClInclude Include="GCObject.h">
+      <Filter>Header Files\Core</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="Electricity2.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="UnitTests.cpp">
+      <Filter>Source Files\Testing</Filter>
+    </ClCompile>
+    <ClCompile Include="Heap.cpp">
+      <Filter>Source Files\Core\Memory</Filter>
+    </ClCompile>
+    <ClCompile Include="PlatformMemory_Windows.cpp">
+      <Filter>Source Files\Platform</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="Electricity2.rc">
+      <Filter>Resource Files</Filter>
+    </ResourceCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <Image Include="small.ico">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="Electricity2.ico">
+      <Filter>Resource Files</Filter>
+    </Image>
+  </ItemGroup>
+</Project>
