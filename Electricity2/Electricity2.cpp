@@ -9,23 +9,67 @@
 #include "Heap.h"
 #include "UnitTests_MemoryHeap.h"
 
+#include "Thread.h"
+#include "ThreadStart.h"
+
 #include <future>
 #include <iostream>
 
 #define MAX_LOADSTRING 100
 
 HeapManager Manager;
-void InitializeSystems()
+
+void 
+InitializeSystems()
 {
     const bool bIsInitted = Manager.Initialize();
     assert( bIsInitted );
 }
 
-void ShutDownSystems()
+void 
+ShutDownSystems()
 {
     const bool bIsShutDown = Manager.ShutDown();
     assert( bIsShutDown );
 }
+
+uint32 __stdcall
+LongRunningFunc( void* )
+{
+    uint32 uSum = 0;
+    for ( uint32 iIdx = 0; iIdx < 4; iIdx++ )
+    {
+        uSum += iIdx;
+        std::cout << " Calculated sum at: " << uSum << std::endl;
+    }
+
+
+    return uSum;
+}
+
+void 
+RunThreadTest()
+{
+    std::cout << "Running threading test " << std::endl;
+
+    CoreThreadStart threadStart;
+    pThreadFunc pThreadFunction = &LongRunningFunc;
+    threadStart.SetWorkFunction( &LongRunningFunc );
+    
+    CoreThread thread( threadStart );
+    const bool bRunning = thread.Resume();
+    assert( bRunning );
+
+    const bool bIsJoinable = thread.IsJoinable();
+    assert( bIsJoinable );
+    thread.Join();
+    int32 iSum = thread.GetExitCode();
+    assert( iSum == 6 );
+
+    std::cout << "Joined secondary thread" << std::endl;
+    std::cout << "Computed sum at: " << iSum << std::endl;
+}
+
 
 // Global Variables:
 HINSTANCE hInst;                                // current instance
@@ -49,6 +93,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
     // TODO: Place code here.
 #ifdef _DEBUG
     UnitTestManager::GetInstance().RunAllUnitTests();
+    RunThreadTest();
 #endif
     InitializeSystems();
 

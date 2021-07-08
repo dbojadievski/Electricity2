@@ -1,24 +1,15 @@
 #pragma once
 #include "CoreTypes.h"
+#include "ThreadStart.h"
 
 typedef void* PPlatformThread;
 typedef uint32 PlatformThreadID;
-typedef void* PPlatformThreadParam;
+typedef CoreThreadStart PlatformThreadParam;
+typedef CoreThreadStart* PtrPlatformThreadParam;
 
-enum class PlatformThreadWaitResult : byte 
-{ 
-	Invalid = 0,
-	OK = 1, 
-	Timeout = 2, 
-	Failed = 3,
-	WouldDeadlock = 4,
-	Count = Failed
-};
-
-typedef uint32  (__stdcall * pThreadFunc ) ( void* pParam );
 namespace PlatformThread
 {
-	PlatformThreadID Create( pThreadFunc pfnFunc, PPlatformThreadParam pParam, bool bRunImmediately );
+	PlatformThreadID Create( const PlatformThreadParam& param );
 	PlatformThreadID GetCurrentThreadID() noexcept;
 	PPlatformThread GetByID( PlatformThreadID idThread ) noexcept;
 
@@ -29,5 +20,7 @@ namespace PlatformThread
 	void Terminate( PPlatformThread pThread, uint32 uExitCode = 1 ) noexcept;
 	bool Suspend( PPlatformThread pThread ) noexcept;
 	bool Resume( PPlatformThread pThread ) noexcept;
+
+	uint32 GetStatusCode( PPlatformThread pThread ) noexcept;
 
 }

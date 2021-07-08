@@ -3,23 +3,14 @@
 #include "CoreTypes.h"
 #include "PlatformThread.h"
 
-enum class CoreThreadStatus : sbyte
-{
-	Invalid					= 0,
-	Suspended				= 1,
-	Running					= 2,
-	Detached				= 3,
-	Count					= Running
-};
-
-typedef PlatformThreadWaitResult CoreThreadWaitResult;
-
+class CoreThreadStart;
 class CoreThread
 {
 public:
 	CoreThread() noexcept;
 	CoreThread( CoreThread&& other ) noexcept;
 	CoreThread( CoreThread& other ) = delete;
+	CoreThread( const CoreThreadStart& threadStart ) noexcept;
 
 	uint32 GetID() const noexcept;
 	bool IsRunning() const noexcept;
@@ -27,7 +18,9 @@ public:
 	bool IsValid() const noexcept;
 	CoreThreadStatus GetStatus() const noexcept;
 
-	bool Yield( ) const noexcept;
+	int32 GetExitCode() const noexcept;
+
+	bool YieldExecution( ) const noexcept;
 
 	bool IsJoinable() const noexcept;
 	/// <summary>

@@ -157,6 +157,7 @@
     <ClInclude Include="SharedPtr.h" />
     <ClInclude Include="targetver.h" />
     <ClInclude Include="Thread.h" />
+    <ClInclude Include="ThreadStart.h" />
     <ClInclude Include="UniquePtr.h" />
     <ClInclude Include="UnitTests.h" />
     <ClInclude Include="UnitTests_LinkedList.h" />
@@ -168,6 +169,7 @@
     <ClCompile Include="PlatformMemory_Windows.cpp" />
     <ClCompile Include="PlatformThread_Windows.cpp" />
     <ClCompile Include="Thread.cpp" />
+    <ClCompile Include="ThreadStart.cpp" />
     <ClCompile Include="UnitTests.cpp" />
   </ItemGroup>
   <ItemGroup>

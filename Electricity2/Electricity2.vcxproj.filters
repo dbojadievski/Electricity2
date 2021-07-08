@@ -114,6 +114,9 @@
     <ClInclude Include="UnitTests_MemoryHeap.h">
       <Filter>Header Files\Testing</Filter>
     </ClInclude>
+    <ClInclude Include="ThreadStart.h">
+      <Filter>Header Files\Core\Multithreading</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Electricity2.cpp">
@@ -132,6 +135,9 @@
       <Filter>Source Files\Platform\Multithreading</Filter>
     </ClCompile>
     <ClCompile Include="Thread.cpp">
+      <Filter>Source Files\Core\Multithreading</Filter>
+    </ClCompile>
+    <ClCompile Include="ThreadStart.cpp">
       <Filter>Source Files\Core\Multithreading</Filter>
     </ClCompile>
   </ItemGroup>

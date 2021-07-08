@@ -7,27 +7,29 @@
 
 namespace PlatformThread
 {
+	typedef uint32( __stdcall* pThreadFunc ) ( void* pParam );
+
 	PlatformThreadID
-	Create( pThreadFunc pfnFunc, PPlatformThreadParam pParam, const bool bRunImmediately )
+	Create( const PlatformThreadParam& param )
 	{
-		LPDWORD lpdwThreadId	= NULL;
+		DWORD dwThreadID	= 0;
 
 		// For now, we do not support thread stack size reservation.
 		DWORD dwCreationFlags	= 0;
-		dwCreationFlags			|= bRunImmediately ? 0 : CREATE_SUSPENDED;
+		dwCreationFlags			|= param.GetCreateRunning() ? 0 : CREATE_SUSPENDED;
 		HANDLE hThread			= CreateThread(
 			NULL // do not inherit from thread
-			, 0 // default stack size
-			, reinterpret_cast<LPTHREAD_START_ROUTINE>(pfnFunc) // function to execute on thread
-			, pParam // thread function parameter
+			, param.GetStackSize() // default stack size
+			, reinterpret_cast<LPTHREAD_START_ROUTINE>(param.GetWorkFunction()) // function to execute on thread
+			, param.GetThreadFuncParam() // thread function parameter
 			, dwCreationFlags
-			, lpdwThreadId
+			, &dwThreadID
 		);
 
 		assert( hThread );
-		assert( lpdwThreadId );
+		assert( dwThreadID );
 
-		return static_cast<PlatformThreadID>(*lpdwThreadId);
+		return static_cast<PlatformThreadID>(dwThreadID);
 	}
 
 	PlatformThreadID
@@ -55,7 +57,7 @@ namespace PlatformThread
 	{
 		PlatformThreadWaitResult status = PlatformThreadWaitResult::OK;
 
-		DWORD dwError = WaitForSingleObject( pThread, static_cast< DWORD >( uMilliseconds ) );
+		DWORD dwError = WaitForSingleObject( pThread, uMilliseconds ? static_cast< DWORD >( uMilliseconds ) : INFINITE );
 		switch ( dwError )
 		{
 			case WAIT_TIMEOUT:
@@ -124,5 +126,18 @@ namespace PlatformThread
 
 		return ( dwPrevSuspendCount != -1 );
 	}
+
+	uint32 
+	GetStatusCode( PPlatformThread pThread ) noexcept
+	{
+		assert( pThread );
+		HANDLE hThread = static_cast< HANDLE >( pThread );
+
+		DWORD dwExitCode = 0;
+		GetExitCodeThread( pThread, &dwExitCode );
+
+		return static_cast<uint32>( dwExitCode );
+	}
+
 }
 #endif

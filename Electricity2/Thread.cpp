@@ -1,14 +1,13 @@
 #include <assert.h>
 #include "Thread.h"
 
+/* CoreThread class */
 CoreThread::CoreThread() noexcept
 	: m_uID( 0 )
 	, m_Status( CoreThreadStatus::Invalid )
 	, m_pPlatformThread( nullptr )
 	, m_PlatformThreadID( 0 )
 {
-	m_PlatformThreadID	= PlatformThread::Create( nullptr, nullptr, false );
-	m_pPlatformThread	= PlatformThread::GetByID( m_PlatformThreadID );
 }
 
 CoreThread::CoreThread( CoreThread&& other ) noexcept
@@ -25,6 +24,52 @@ CoreThread::CoreThread( CoreThread&& other ) noexcept
 	other.m_PlatformThreadID	= 0;
 }
 
+CoreThread::CoreThread( const CoreThreadStart& threadStart ) noexcept
+	: m_uID( 0 )
+	, m_Status( CoreThreadStatus::Invalid)
+	, m_PlatformThreadID( 0 )
+	, m_pPlatformThread( nullptr )
+{	
+	// A thread with no worker function serves no purpose.
+	assert( threadStart.GetWorkFunction() );
+
+	// A detached thread that starts suspended can never be run, as it has no handle that can be used to start it.
+	assert( !threadStart.m_bDetached || threadStart.m_bRunning ); 
+
+	if ( threadStart.GetWorkFunction() )
+	{
+		m_PlatformThreadID		= PlatformThread::Create( threadStart );
+		if ( m_PlatformThreadID )
+		{
+			// Assign our thread an ID.
+
+			m_pPlatformThread	= PlatformThread::GetByID( m_PlatformThreadID );
+			assert( m_pPlatformThread );
+
+			if ( threadStart.m_bDetached )
+			{
+				const bool bDetached	= PlatformThread::Detach( m_pPlatformThread );
+				assert( bDetached );
+				if ( bDetached )
+				{
+					m_Status			= CoreThreadStatus::Detached;
+				}
+				else
+				{
+					m_Status			= CoreThreadStatus::Running;
+				}
+			}
+			else if ( threadStart.m_bRunning )
+			{
+				m_Status		= CoreThreadStatus::Running;
+			}
+			else
+			{
+				m_Status		= CoreThreadStatus::Suspended;
+			}
+		}
+	}
+}
 
 uint32
 CoreThread::GetID() const noexcept
@@ -41,7 +86,7 @@ CoreThread::IsRunning() const noexcept
 bool
 CoreThread::IsValid() const noexcept
 {
-	return ( m_Status != CoreThreadStatus::Invalid );
+	return ( ( m_uID != 0 ) && ( m_Status != CoreThreadStatus::Invalid ) );
 }
 
 CoreThreadStatus
@@ -50,8 +95,24 @@ CoreThread::GetStatus() const noexcept
 	return m_Status;
 }
 
+int32
+CoreThread::GetExitCode() const noexcept
+{
+	int32 iExitCode = -1;
+
+	const bool bIsRunning = IsRunning();
+	assert( bIsRunning );
+	if ( bIsRunning )
+	{
+		uint32 uExitCode = PlatformThread::GetStatusCode( m_pPlatformThread );
+		iExitCode = static_cast< int32 >( uExitCode );
+	}
+
+	return iExitCode;
+}
+
 bool
-CoreThread::Yield() const noexcept
+CoreThread::YieldExecution() const noexcept
 {
 	const bool bIsRunning	= IsRunning();
 	assert( bIsRunning );
@@ -87,6 +148,10 @@ CoreThread::Join( const uint64 uTime /*  = 0 */) noexcept
 	else if ( bIsJoinable )
 	{
 		threadWaitResult	= PlatformThread::Join( m_pPlatformThread, uTime );
+		if ( threadWaitResult == PlatformThreadWaitResult::OK )
+		{
+			m_Status = CoreThreadStatus::Stopped;
+		}
 	}
 
 	return threadWaitResult;
@@ -171,7 +236,7 @@ CoreThread::Resume() noexcept
 	bool bIsResumed			= false;
 	if ( bIsSuspended )
 	{
-		bool bIsResumed		= PlatformThread::Resume( m_pPlatformThread );
+		bIsResumed		= PlatformThread::Resume( m_pPlatformThread );
 		assert( bIsResumed );
 		
 		if ( bIsResumed )
