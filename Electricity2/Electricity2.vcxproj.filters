@@ -49,6 +49,15 @@
     <Filter Include="Source Files\Platform">
       <UniqueIdentifier>{3545f24c-115d-418f-86a7-0ce0c5a2bba8}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Header Files\Core\Multithreading">
+      <UniqueIdentifier>{3271206d-2305-4475-affe-eb65089255e3}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Platform\Multithreading">
+      <UniqueIdentifier>{f630edb1-44b8-4230-a2d3-7e1aaf5feed1}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Core\Multithreading">
+      <UniqueIdentifier>{7af5648f-e8d9-4ab2-8690-33b67ee6f1f2}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="framework.h">
@@ -96,6 +105,15 @@
     <ClInclude Include="GCObject.h">
       <Filter>Header Files\Core</Filter>
     </ClInclude>
+    <ClInclude Include="Thread.h">
+      <Filter>Header Files\Core\Multithreading</Filter>
+    </ClInclude>
+    <ClInclude Include="PlatformThread.h">
+      <Filter>Header Files\Platform</Filter>
+    </ClInclude>
+    <ClInclude Include="UnitTests_MemoryHeap.h">
+      <Filter>Header Files\Testing</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Electricity2.cpp">
@@ -109,6 +127,12 @@
     </ClCompile>
     <ClCompile Include="PlatformMemory_Windows.cpp">
       <Filter>Source Files\Platform</Filter>
+    </ClCompile>
+    <ClCompile Include="PlatformThread_Windows.cpp">
+      <Filter>Source Files\Platform\Multithreading</Filter>
+    </ClCompile>
+    <ClCompile Include="Thread.cpp">
+      <Filter>Source Files\Core\Multithreading</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

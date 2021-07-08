@@ -98,7 +98,7 @@ HeapManager::Initialize()
 bool
 HeapManager::ShutDown()
 {
-	bool bIsShutDown		= false;
+	bool bIsShutDown		= true;
 
 	s_uMemAlignmentSize		= 0;
 

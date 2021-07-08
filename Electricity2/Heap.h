@@ -53,6 +53,10 @@ public:
 		, byte* InitialContent = nullptr
 	) noexcept;
 	static void Release( HeapNode& Node ) noexcept;
+
+#ifdef _DEBUG
+	static void CheckForMemoryLeak();
+#endif
 private:
 	static HeapNode* FindFirstFit( const uint32 uSize ) noexcept;
 	static HeapNode* FindBestFit( const uint32 uSize ) noexcept;
@@ -66,10 +70,6 @@ private:
 
 	static HeapNode * ReservePage( const uint32 uSize, byte* InitialContent = nullptr );
 	static HeapNode * ReleasePage( HeapNode& Node );
-	
-#ifdef _DEBUG
-	static void CheckForMemoryLeak();
-#endif
 
 	static HeapNode*	s_pUsedMemory;
 	static HeapNode*	s_pFreeMemory;
@@ -129,6 +129,7 @@ void __GCDelete__( Type* self)
 {
 	self->~Type(); // Manually call destructor to de-initialise type.
 	Electricity_Delete( self );
+	self = nullptr;
 }
 
 #define DeleteObject(object) __GCDelete__(object)

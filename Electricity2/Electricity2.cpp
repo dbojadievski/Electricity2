@@ -6,9 +6,10 @@
 #include "CoreTypes.h"
 #include "UnitTests.h"
 #include "PtrTypeUnitTests.h"
-
 #include "Heap.h"
+#include "UnitTests_MemoryHeap.h"
 
+#include <future>
 #include <iostream>
 
 #define MAX_LOADSTRING 100
@@ -25,40 +26,6 @@ void ShutDownSystems()
     const bool bIsShutDown = Manager.ShutDown();
     assert( bIsShutDown );
 }
-
-struct Vector3
-{
-    operator size_t () const { return sizeof(this); }
-    float m_fX, m_fY, m_fZ;
-
-    /// <summary>
-    /// Can be called from gcnew.
-    /// </summary>
-    Vector3() : m_fX(0), m_fY(0), m_fZ(0)
-    {
-        std::cout << "Called default Vector3 constructor";
-    }
-    
-    /// <summary>
-    /// Can't be called from gcnew.
-    /// </summary>
-    /// <param name="fX"></param>
-    /// <param name="fY"></param>
-    /// <param name="fZ"></param>
-    Vector3( const float fX, const float fY, const float fZ ) :
-        m_fX( fX )
-        , m_fY( fY )
-        , m_fZ( fZ )
-    {
-        std::cout << "Called parameterized Vector3 constructor";
-    }
-
-    // Should be called from gcdelete.
-    ~Vector3()
-    {
-        std::cout << "Called ~Vector3() destructor";
-    }
-};
 
 // Global Variables:
 HINSTANCE hInst;                                // current instance
@@ -84,14 +51,10 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
     UnitTestManager::GetInstance().RunAllUnitTests();
 #endif
     InitializeSystems();
-    // Let's see what happens when we new some memory.
-    // The first one we'll forget about and let it explode.
-    Vector3* pVector = static_cast<Vector3*>(gcnew(Vector3));
 
-    // The second one we'll properly delete and make sure it doesn't go boom.
-    SharedPtr<Vector3> pSharedVector = CreateObject( Vector3 ); /* static_cast< Vector3* >( gcnew( Vector3 ) )*/;
-    DeleteObject( pSharedVector.Get() );
     
+    // Can we do futures in our version of C++?
+	auto fut = std::async( [] {return 3 + 4; } );
     ShutDownSystems();
 
     // Initialize global strings
