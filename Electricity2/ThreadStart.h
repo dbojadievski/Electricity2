@@ -75,7 +75,7 @@ public:
 	void SetWorkFunction( pThreadFunc pfnWorkFunction ) noexcept;
 
 private:
-	bool m_bRunning;
+	bool m_bScheduled;
 	bool m_bDetached;
 
 	CoreThreadPriority			m_Priority;

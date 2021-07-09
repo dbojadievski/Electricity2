@@ -117,6 +117,18 @@
     <ClInclude Include="ThreadStart.h">
       <Filter>Header Files\Core\Multithreading</Filter>
     </ClInclude>
+    <ClInclude Include="Fiber.h">
+      <Filter>Header Files\Core\Multithreading</Filter>
+    </ClInclude>
+    <ClInclude Include="FiberStart.h">
+      <Filter>Header Files\Core\Multithreading</Filter>
+    </ClInclude>
+    <ClInclude Include="PlatformFiber.h">
+      <Filter>Header Files\Platform</Filter>
+    </ClInclude>
+    <ClInclude Include="PlatformThreadingDefines.h">
+      <Filter>Header Files\Platform</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Electricity2.cpp">
@@ -139,6 +151,18 @@
     </ClCompile>
     <ClCompile Include="ThreadStart.cpp">
       <Filter>Source Files\Core\Multithreading</Filter>
+    </ClCompile>
+    <ClCompile Include="Fiber.cpp">
+      <Filter>Source Files\Core\Multithreading</Filter>
+    </ClCompile>
+    <ClCompile Include="FiberStart.cpp">
+      <Filter>Source Files\Core\Multithreading</Filter>
+    </ClCompile>
+    <ClCompile Include="PlatformFiber_Windows.cpp">
+      <Filter>Source Files\Platform\Multithreading</Filter>
+    </ClCompile>
+    <ClCompile Include="PlatformThreadingDefines_Windows.cpp">
+      <Filter>Source Files\Platform\Multithreading</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

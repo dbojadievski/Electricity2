@@ -2,7 +2,7 @@
 
 /* CoreThreadStart class */
 CoreThreadStart::CoreThreadStart( pThreadFunc pfnWorkFunction, const bool bCreateRunning /* = false */, const bool bCreateDetached /* = false */ ) noexcept
-	: m_bRunning( bCreateRunning )
+	: m_bScheduled( bCreateRunning )
 	, m_bDetached( bCreateDetached )
 	, m_Priority( CoreThreadPriority::Normal )
 	, m_Affinity( -1 )
@@ -13,7 +13,7 @@ CoreThreadStart::CoreThreadStart( pThreadFunc pfnWorkFunction, const bool bCreat
 }
 
 CoreThreadStart::CoreThreadStart() noexcept
-	: m_bRunning( false )
+	: m_bScheduled( false )
 	, m_bDetached( false )
 	, m_Priority( CoreThreadPriority::Normal )
 	, m_Affinity( -1 )
@@ -31,7 +31,7 @@ CoreThreadStart::CoreThreadStart( const CoreThreadStart& other ) noexcept
 
 CoreThreadStart::~CoreThreadStart() noexcept
 {
-	m_bRunning			= false;
+	m_bScheduled			= false;
 	m_bDetached			= false;
 	
 	m_Priority			= CoreThreadPriority::Idle;
@@ -46,7 +46,7 @@ CoreThreadStart::~CoreThreadStart() noexcept
 CoreThreadStart&
 CoreThreadStart::operator=( const CoreThreadStart& other ) noexcept
 {
-	m_bRunning			= other.m_bRunning;
+	m_bScheduled			= other.m_bScheduled;
 	m_bDetached			= other.m_bDetached;
 	
 	m_Priority			= other.m_Priority;
@@ -62,7 +62,7 @@ CoreThreadStart::operator=( const CoreThreadStart& other ) noexcept
 bool
 CoreThreadStart::GetCreateRunning() const noexcept
 {
-	return m_bRunning;
+	return m_bScheduled;
 }
 
 bool

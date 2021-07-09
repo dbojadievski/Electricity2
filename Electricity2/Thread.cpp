@@ -34,7 +34,7 @@ CoreThread::CoreThread( const CoreThreadStart& threadStart ) noexcept
 	assert( threadStart.GetWorkFunction() );
 
 	// A detached thread that starts suspended can never be run, as it has no handle that can be used to start it.
-	assert( !threadStart.m_bDetached || threadStart.m_bRunning ); 
+	assert( !threadStart.m_bDetached || threadStart.m_bScheduled ); 
 
 	if ( threadStart.GetWorkFunction() )
 	{
@@ -59,7 +59,7 @@ CoreThread::CoreThread( const CoreThreadStart& threadStart ) noexcept
 					m_Status			= CoreThreadStatus::Running;
 				}
 			}
-			else if ( threadStart.m_bRunning )
+			else if ( threadStart.m_bScheduled )
 			{
 				m_Status		= CoreThreadStatus::Running;
 			}
@@ -69,6 +69,15 @@ CoreThread::CoreThread( const CoreThreadStart& threadStart ) noexcept
 			}
 		}
 	}
+}
+
+CoreThread::~CoreThread() noexcept
+{
+	m_uID		= 0;
+	m_Status	= CoreThreadStatus::Invalid;
+
+	m_PlatformThreadID	= 0;
+	m_pPlatformThread	= nullptr;
 }
 
 uint32
@@ -253,4 +262,16 @@ uint32
 CoreThread::GetCurrentThreadID() noexcept
 {
 	return PlatformThread::GetCurrentThreadID();
+}
+
+CoreThread
+CoreThread::GetCurrentThread() noexcept
+{
+	CoreThread currThread;
+	
+	currThread.m_PlatformThreadID = GetCurrentThreadID();
+	currThread.m_pPlatformThread = PlatformThread::GetByID( currThread.m_PlatformThreadID );
+	currThread.m_Status = CoreThreadStatus::Running;
+
+	return currThread;
 }

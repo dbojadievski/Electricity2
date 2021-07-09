@@ -146,12 +146,16 @@
     <ClInclude Include="CoreTypes.h" />
     <ClInclude Include="Electricity2.h" />
     <ClInclude Include="FastDelegate.h" />
+    <ClInclude Include="Fiber.h" />
+    <ClInclude Include="FiberStart.h" />
     <ClInclude Include="framework.h" />
     <ClInclude Include="GCObject.h" />
     <ClInclude Include="Heap.h" />
     <ClInclude Include="LinkedList.h" />
+    <ClInclude Include="PlatformFiber.h" />
     <ClInclude Include="PlatformMemory.h" />
     <ClInclude Include="PlatformThread.h" />
+    <ClInclude Include="PlatformThreadingDefines.h" />
     <ClInclude Include="PtrTypeUnitTests.h" />
     <ClInclude Include="Resource.h" />
     <ClInclude Include="SharedPtr.h" />
@@ -165,8 +169,12 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Electricity2.cpp" />
+    <ClCompile Include="Fiber.cpp" />
+    <ClCompile Include="FiberStart.cpp" />
     <ClCompile Include="Heap.cpp" />
+    <ClCompile Include="PlatformFiber_Windows.cpp" />
     <ClCompile Include="PlatformMemory_Windows.cpp" />
+    <ClCompile Include="PlatformThreadingDefines_Windows.cpp" />
     <ClCompile Include="PlatformThread_Windows.cpp" />
     <ClCompile Include="Thread.cpp" />
     <ClCompile Include="ThreadStart.cpp" />

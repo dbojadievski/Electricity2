@@ -35,10 +35,26 @@ namespace PlatformThread
 	PlatformThreadID
 	GetCurrentThreadID() noexcept
 	{
-		DWORD dwThreadId	= GetCurrentThreadId();
-		assert( dwThreadId );
+		DWORD dwThreadID = 0;
 
-		return static_cast<PlatformThreadID>( dwThreadId );
+		HANDLE hTargetHandle = nullptr;
+		bool bSuccess = DuplicateHandle( 
+			GetCurrentProcess() 
+			, GetCurrentThread()
+			, GetCurrentProcess()
+			, &hTargetHandle
+			, 0 
+			, true 
+			, DUPLICATE_SAME_ACCESS 
+		);
+		assert( bSuccess );
+
+		if ( hTargetHandle )
+		{
+			dwThreadID = GetThreadId( hTargetHandle );
+		}
+
+		return static_cast<PlatformThreadID>( dwThreadID );
 	}
 
 	PPlatformThread

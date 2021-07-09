@@ -11,6 +11,8 @@
 
 #include "Thread.h"
 #include "ThreadStart.h"
+#include "Fiber.h"
+#include "FiberStart.h"
 
 #include <future>
 #include <iostream>
@@ -22,6 +24,7 @@ HeapManager Manager;
 void 
 InitializeSystems()
 {
+    assert(AllocConsole());
     const bool bIsInitted = Manager.Initialize();
     assert( bIsInitted );
 }
@@ -31,6 +34,7 @@ ShutDownSystems()
 {
     const bool bIsShutDown = Manager.ShutDown();
     assert( bIsShutDown );
+    assert(FreeConsole());
 }
 
 uint32 __stdcall
@@ -45,6 +49,65 @@ LongRunningFunc( void* )
 
 
     return uSum;
+}
+
+
+CoreFiber* pFiber1, * pFiber2, *pFiber3;
+
+void __stdcall
+Fiber3Func( pFiberFuncParam pFuncParam )
+{
+	uint32 uIdx = 0;
+	while ( true )
+	{
+		std::cout << "Running from fiber 3 func" << std::endl;
+		if ( ++uIdx == 10 )
+		{
+			std::cout << "Yielding to fiber 2" << std::endl;
+			uIdx = 0;
+			pFiber3->SwitchTo( *pFiber2 );
+		}
+	}
+}
+
+void __stdcall
+Fiber2Func( pFiberFuncParam pFuncParam )
+{
+    uint32 uIdx = 0;
+    while ( true )
+    {
+        std::cout << "Running from fiber 2 func" << std::endl;
+        if ( ++uIdx == 10 )
+        {
+            std::cout << "Yielding to fiber 1" << std::endl;
+            uIdx = 0;
+            pFiber2->SwitchTo( *pFiber3 );
+        }
+    }
+}
+
+uint32 __stdcall
+FiberToThreadFunc( ThreadFuncParamPtr pParam )
+{
+    std::cout << "Running from fiber to thread func" << std::endl;
+
+    // How do we give the fiber functons access to the fibers themselves, so the fiber can switch?
+    CoreThread currThread = CoreThread::GetCurrentThread();
+    pFiber1 = new CoreFiber( currThread );
+    
+    pFiber3 = new CoreFiber( &Fiber3Func );
+    pFiber2 = new CoreFiber( &Fiber2Func );
+
+    pFiber1->SwitchTo( *pFiber2 );
+    
+    return 0;
+}
+
+void 
+RunFiberTest()
+{
+    CoreThreadStart threadStart( &FiberToThreadFunc, true );
+    CoreThread* pThread = new CoreThread( threadStart );
 }
 
 void 
@@ -94,6 +157,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 #ifdef _DEBUG
     UnitTestManager::GetInstance().RunAllUnitTests();
     RunThreadTest();
+    RunFiberTest();
 #endif
     InitializeSystems();
 

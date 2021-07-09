@@ -1,4 +1,5 @@
 #line 1 "C:\\Users\\dino.bojadjievski\\source\\repos\\Electricity2\\Electricity2\\PlatformMemory_Windows.cpp"
+
 #line 1 "C:\\Users\\dino.bojadjievski\\source\\repos\\Electricity2\\Electricity2\\PlatformMemory.h"
 #pragma once
 
@@ -4113,10 +4114,18 @@ typedef uint64 CORE_QWORD;
 
 typedef uint32 Handle;
 #line 4 "C:\\Users\\dino.bojadjievski\\source\\repos\\Electricity2\\Electricity2\\PlatformMemory.h"
-uint64 GetMinAllocSize() noexcept;
-void* PlatformAlloc( uint64 uSize );
-void PlatformFree( void* pMemory )
-#line 2 "C:\\Users\\dino.bojadjievski\\source\\repos\\Electricity2\\Electricity2\\PlatformMemory_Windows.cpp"
+namespace PlatformMemory
+{
+	bool Initialize();
+	bool ShutDown();
+
+	uint32 GetMinAllocSize() noexcept;
+	void* InternalAlloc( uint32 uSize );
+	bool Free( void* pMemory );
+
+	void Copy( byte* pSource, byte* pDestination, const uint32 uSize ) noexcept;
+}
+#line 3 "C:\\Users\\dino.bojadjievski\\source\\repos\\Electricity2\\Electricity2\\PlatformMemory_Windows.cpp"
 
 
 #line 1 "C:\\Program Files (x86)\\Windows Kits\\10\\Include\\10.0.19041.0\\um\\windows.h"
@@ -161463,26 +161472,69 @@ BOOL __stdcall ImmDisableLegacyIME(void);
 
 #line 272 "C:\\Program Files (x86)\\Windows Kits\\10\\Include\\10.0.19041.0\\um\\windows.h"
 
-#line 5 "C:\\Users\\dino.bojadjievski\\source\\repos\\Electricity2\\Electricity2\\PlatformMemory_Windows.cpp"
+#line 6 "C:\\Users\\dino.bojadjievski\\source\\repos\\Electricity2\\Electricity2\\PlatformMemory_Windows.cpp"
 
 
-uint64 
-GetMinAllocSize() noexcept
+DWORD	dwPageSize;
+size_t	szLargePageSize;
+DWORD	dwAllocGranularity;
+
+HANDLE hHeap;
+PROCESS_HEAP_ENTRY Entry;
+
+bool
+PlatformMemory::Initialize()
 {
-	SIZE_T Min = GetLargePageMinimum();
-	const uint64 MinAllocSize = static_cast<uint64>( Min );
+	bool bInitialized	= false;
 
+	SYSTEM_INFO sSysInfo;
+	GetSystemInfo( &sSysInfo );
+	
+	dwPageSize			= sSysInfo.dwPageSize;
+	dwAllocGranularity	= sSysInfo.dwAllocationGranularity;
+
+	szLargePageSize		= GetLargePageMinimum();
+	hHeap				= HeapCreate( 0, ( dwAllocGranularity * 64 ), 0 );
+	if ( hHeap )
+	{
+		bInitialized	= true;
+	}
+
+	return bInitialized;
+}
+
+bool
+PlatformMemory::ShutDown()
+{
+	bool bShutDown	= true;
+	return bShutDown;
+}
+
+uint32 
+PlatformMemory::GetMinAllocSize() noexcept
+{
+	const uint32 MinAllocSize	= static_cast<uint32>( dwAllocGranularity );
 	return MinAllocSize;
 }
 
 void* 
-PlatformAlloc( uint64 uSize )
+PlatformMemory::InternalAlloc( uint32 uSize )
 {
-	return nullptr;
+	const SIZE_T szSize = static_cast<SIZE_T>( uSize );
+	LPVOID pMem			= HeapAlloc( hHeap, 0x00000008, szSize );
+	
+	return pMem;
+}
+
+bool
+PlatformMemory::Free( void* pMemory )
+{
+	return HeapFree( hHeap, 0, pMemory );
 }
 
 void
-PlaformFree( void* pMemory )
+PlatformMemory::Copy( byte* pSource, byte* pDestination, const uint32 uSize ) noexcept
 {
-
+	memcpy((pDestination),(pSource),(uSize));
 }
+#line 71 "C:\\Users\\dino.bojadjievski\\source\\repos\\Electricity2\\Electricity2\\PlatformMemory_Windows.cpp"

@@ -1,17 +1,23 @@
 #pragma once
 
 #include "CoreTypes.h"
+#include "ThreadStart.h"
 #include "PlatformThread.h"
+
+class CoreFiber;
 
 class CoreThreadStart;
 class CoreThread
 {
+	friend class CoreFiber;
 public:
 	CoreThread() noexcept;
 	CoreThread( CoreThread&& other ) noexcept;
 	CoreThread( CoreThread& other ) = delete;
 	CoreThread( const CoreThreadStart& threadStart ) noexcept;
 
+	~CoreThread() noexcept;
+	
 	uint32 GetID() const noexcept;
 	bool IsRunning() const noexcept;
 
@@ -61,6 +67,7 @@ public:
 	bool Resume() noexcept;
 
 	static uint32 GetCurrentThreadID()  noexcept;
+	static CoreThread GetCurrentThread() noexcept;
 private:
 	uint32				m_uID;
 	CoreThreadStatus	m_Status;

@@ -45956,20 +45956,13 @@ class UnitTest
 	friend class UnitTestManager;
 public:
 	UnitTest( const char* ) noexcept;
+
+	virtual ~UnitTest() { }
 private:
 	bool operator==( const UnitTest& Other ) const noexcept;
 	bool operator==( const string& Other ) const noexcept;
-
 	virtual bool operator()() const { throw "Class must override this implementation"; };
 	const string		m_strName;
-};
-
-class SampleTest : UnitTest
-{
-public:
-	SampleTest() : UnitTest( "SampleTest" ) {}
-private:
-	virtual bool operator()( ) const { return true; };
 };
 
 

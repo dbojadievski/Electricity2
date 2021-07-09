@@ -1,1 +1,12 @@
-﻿LINK : fatal error LNK1104: cannot open file 'x64\Debug\Electricity2.obj'
+﻿  Electricity2.cpp
+  Fiber.cpp
+  FiberStart.cpp
+  Heap.cpp
+  PlatformFiber_Windows.cpp
+  PlatformMemory_Windows.cpp
+  PlatformThreadingDefines_Windows.cpp
+  PlatformThread_Windows.cpp
+  Thread.cpp
+  ThreadStart.cpp
+  UnitTests.cpp
+LINK : fatal error LNK1104: cannot open file 'x64\Debug\Electricity2.obj'
