@@ -143,6 +143,8 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="UnitTests_CmdLineParser.h" />
+    <ClInclude Include="CommandLineParser.h" />
     <ClInclude Include="CoreTypes.h" />
     <ClInclude Include="Electricity2.h" />
     <ClInclude Include="FastDelegate.h" />
@@ -168,6 +170,7 @@
     <ClInclude Include="UnitTests_MemoryHeap.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="CommandLineParser.cpp" />
     <ClCompile Include="Electricity2.cpp" />
     <ClCompile Include="Fiber.cpp" />
     <ClCompile Include="FiberStart.cpp" />

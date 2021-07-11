@@ -4,7 +4,7 @@
 UnitTestManager UnitTestManager::s_Instance;
 
 UnitTest::UnitTest( const char* pStrName ) noexcept : 
-	m_strName(m_strName)
+	m_strName( pStrName )
 {
 	UnitTestManager::GetInstance().Register( *this );
 }
@@ -67,6 +67,7 @@ UnitTestManager::Register( UnitTest& Test ) noexcept
 	if ( !bHasTest )
 	{
 		m_Tests.push_back( Test );
+		bRegistered = true;
 	}
 
 	return bRegistered;

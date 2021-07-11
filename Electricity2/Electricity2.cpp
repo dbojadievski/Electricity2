@@ -8,6 +8,7 @@
 #include "PtrTypeUnitTests.h"
 #include "Heap.h"
 #include "UnitTests_MemoryHeap.h"
+#include "UnitTests_CmdLineParser.h"
 
 #include "Thread.h"
 #include "ThreadStart.h"
@@ -154,13 +155,15 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
     UNREFERENCED_PARAMETER(lpCmdLine);
 
     // TODO: Place code here.
-#ifdef _DEBUG
-    UnitTestManager::GetInstance().RunAllUnitTests();
-    RunThreadTest();
-    RunFiberTest();
-#endif
     InitializeSystems();
 
+#ifdef _DEBUG
+    UnitTestManager::GetInstance().RunAllUnitTests();
+    UnitTest_CmdLineParser ParserTest;
+    assert(ParserTest());
+    //RunThreadTest();
+    //RunFiberTest();
+#endif
     
     // Can we do futures in our version of C++?
 	auto fut = std::async( [] {return 3 + 4; } );

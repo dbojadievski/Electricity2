@@ -58,6 +58,15 @@
     <Filter Include="Source Files\Core\Multithreading">
       <UniqueIdentifier>{7af5648f-e8d9-4ab2-8690-33b67ee6f1f2}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Header Files\App">
+      <UniqueIdentifier>{8c9cab3b-667f-41b4-a920-35a5dc03e93c}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\App">
+      <UniqueIdentifier>{12950edb-befc-437b-94f8-15f906201d37}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\App\UnitTests">
+      <UniqueIdentifier>{9662ebb5-3bf6-47f4-99c3-fd6a67902277}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="framework.h">
@@ -129,6 +138,12 @@
     <ClInclude Include="PlatformThreadingDefines.h">
       <Filter>Header Files\Platform</Filter>
     </ClInclude>
+    <ClInclude Include="CommandLineParser.h">
+      <Filter>Header Files\App</Filter>
+    </ClInclude>
+    <ClInclude Include="UnitTests_CmdLineParser.h">
+      <Filter>Header Files\App\UnitTests</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Electricity2.cpp">
@@ -163,6 +178,9 @@
     </ClCompile>
     <ClCompile Include="PlatformThreadingDefines_Windows.cpp">
       <Filter>Source Files\Platform\Multithreading</Filter>
+    </ClCompile>
+    <ClCompile Include="CommandLineParser.cpp">
+      <Filter>Source Files\App</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
