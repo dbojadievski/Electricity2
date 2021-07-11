@@ -10,7 +10,7 @@ void ExplodeString( const String& sString, StringArray& aTokens, const char deli
 
 // CommandLineParser implementation.
 
-CommandLineParser::CommandLineParser( const std::string sCmdLine )
+CommandLineParser::CommandLineParser( String sCmdLine ) noexcept
 	: m_sCmdLine( sCmdLine )
 {
 

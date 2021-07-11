@@ -25,7 +25,6 @@ HeapManager Manager;
 void 
 InitializeSystems()
 {
-    assert(AllocConsole());
     const bool bIsInitted = Manager.Initialize();
     assert( bIsInitted );
 }
@@ -51,7 +50,6 @@ LongRunningFunc( void* )
 
     return uSum;
 }
-
 
 CoreFiber* pFiber1, * pFiber2, *pFiber3;
 
@@ -80,7 +78,7 @@ Fiber2Func( pFiberFuncParam pFuncParam )
         std::cout << "Running from fiber 2 func" << std::endl;
         if ( ++uIdx == 10 )
         {
-            std::cout << "Yielding to fiber 1" << std::endl;
+            std::cout << "Yielding to fiber 3" << std::endl;
             uIdx = 0;
             pFiber2->SwitchTo( *pFiber3 );
         }
@@ -161,8 +159,8 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
     UnitTestManager::GetInstance().RunAllUnitTests();
     UnitTest_CmdLineParser ParserTest;
     assert(ParserTest());
-    //RunThreadTest();
-    //RunFiberTest();
+    RunThreadTest();
+    RunFiberTest();
 #endif
     
     // Can we do futures in our version of C++?
@@ -192,6 +190,8 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
             TranslateMessage(&msg);
             DispatchMessage(&msg);
         }
+
+        std::cout.flush();
     }
 
     return (int) msg.wParam;
@@ -319,4 +319,12 @@ INT_PTR CALLBACK About(HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam)
         break;
     }
     return (INT_PTR)FALSE;
+}
+
+int main()
+{
+	std::cout << "Output standard\n";
+	std::cerr << "Output error\n";
+
+	return wWinMain( GetModuleHandle( NULL ), NULL, GetCommandLineW(), SW_SHOWNORMAL );
 }
