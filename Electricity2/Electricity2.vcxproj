@@ -94,6 +94,7 @@
     <Link>
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
+      <AdditionalDependencies>winmm.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
@@ -104,12 +105,14 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>WIN32;NDEBUG;_WINDOWS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
+      <LanguageStandard>stdcpp17</LanguageStandard>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
       <GenerateDebugInformation>true</GenerateDebugInformation>
+      <AdditionalDependencies>winmm.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
@@ -143,6 +146,18 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="App.h" />
+    <ClInclude Include="CoreEngine.h" />
+    <ClInclude Include="CoreObject.h" />
+    <ClInclude Include="CoreObjectCodeGen.h" />
+    <ClInclude Include="CoreSystem.h" />
+    <ClInclude Include="CoreTimer.h" />
+    <ClInclude Include="DisplaySettings.h" />
+    <ClInclude Include="PlatformAppDefines.h" />
+    <ClInclude Include="PlatformDisplaySettings.h" />
+    <ClInclude Include="PlatformTime.h" />
+    <ClInclude Include="PlatformUtils.h" />
+    <ClInclude Include="SettingsSystem.h" />
     <ClInclude Include="UnitTests_CmdLineParser.h" />
     <ClInclude Include="CommandLineParser.h" />
     <ClInclude Include="CoreTypes.h" />
@@ -151,7 +166,6 @@
     <ClInclude Include="Fiber.h" />
     <ClInclude Include="FiberStart.h" />
     <ClInclude Include="framework.h" />
-    <ClInclude Include="GCObject.h" />
     <ClInclude Include="Heap.h" />
     <ClInclude Include="LinkedList.h" />
     <ClInclude Include="PlatformFiber.h" />
@@ -168,20 +182,32 @@
     <ClInclude Include="UnitTests.h" />
     <ClInclude Include="UnitTests_LinkedList.h" />
     <ClInclude Include="UnitTests_MemoryHeap.h" />
+    <ClInclude Include="UUID.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="App.cpp" />
     <ClCompile Include="CommandLineParser.cpp" />
+    <ClCompile Include="CoreEngine.cpp" />
+    <ClCompile Include="CoreObject.cpp" />
+    <ClCompile Include="CoreTimer.cpp" />
+    <ClCompile Include="DisplaySettings.cpp" />
     <ClCompile Include="Electricity2.cpp" />
     <ClCompile Include="Fiber.cpp" />
     <ClCompile Include="FiberStart.cpp" />
     <ClCompile Include="Heap.cpp" />
+    <ClCompile Include="PlatformAppDefines_Windows.cpp" />
+    <ClCompile Include="PlatformDisplaySettings_Windows.cpp" />
     <ClCompile Include="PlatformFiber_Windows.cpp" />
     <ClCompile Include="PlatformMemory_Windows.cpp" />
     <ClCompile Include="PlatformThreadingDefines_Windows.cpp" />
     <ClCompile Include="PlatformThread_Windows.cpp" />
+    <ClCompile Include="PlatformTime_Windows.cpp" />
+    <ClCompile Include="PlatformUtils_Windows.cpp" />
+    <ClCompile Include="SettingsSystem.cpp" />
     <ClCompile Include="Thread.cpp" />
     <ClCompile Include="ThreadStart.cpp" />
     <ClCompile Include="UnitTests.cpp" />
+    <ClCompile Include="UUID.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="Electricity2.rc" />

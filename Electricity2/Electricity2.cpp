@@ -3,6 +3,8 @@
 
 #include "framework.h"
 #include "Electricity2.h"
+
+#include "App.h"
 #include "CoreTypes.h"
 #include "UnitTests.h"
 #include "PtrTypeUnitTests.h"
@@ -17,11 +19,13 @@
 
 #include <future>
 #include <iostream>
+#include "CoreEngine.h"
 
+#include "SettingsSystem.h"
 #define MAX_LOADSTRING 100
 
 HeapManager Manager;
-
+App* pApp = nullptr;
 void 
 InitializeSystems()
 {
@@ -132,6 +136,40 @@ RunThreadTest()
     std::cout << "Computed sum at: " << iSum << std::endl;
 }
 
+class Parent : public CoreObject
+{
+	INIT_CLASS( Parent )
+public:
+	int x;
+};
+
+class Child : public Parent
+{
+	INIT_CLASS( Child )
+public:
+	int y;
+};
+
+void
+RunInheritanceTest()
+{
+    SharedPtr<Parent> pParent = CreateObject( Parent );
+    SharedPtr<Child> pChild = CreateObject( Child );
+
+    ObjectID uParentID = pParent->GetID();
+    ObjectID uChildID = pChild->GetID();
+    assert( uParentID != uChildID );
+
+    ClassID uParentClassId = Parent::GetClassId();
+    ClassID uChildClassId = Child::GetClassId();
+    
+    assert( uParentClassId != uChildClassId );
+}
+
+void
+NewTest()
+{
+}
 
 // Global Variables:
 HINSTANCE hInst;                                // current instance
@@ -160,12 +198,13 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
     UnitTest_CmdLineParser ParserTest;
     assert(ParserTest());
     RunThreadTest();
-    RunFiberTest();
+    //RunFiberTest();
+    RunInheritanceTest();
 #endif
     
     // Can we do futures in our version of C++?
-	auto fut = std::async( [] {return 3 + 4; } );
-    ShutDownSystems();
+
+    auto fut = std::async( [] {return 3 + 4; } );
 
     // Initialize global strings
     LoadStringW(hInstance, IDS_APP_TITLE, szTitle, MAX_LOADSTRING);
@@ -192,11 +231,12 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
         }
 
         std::cout.flush();
+        g_pEngine->Update();
     }
 
+    ShutDownSystems();
     return (int) msg.wParam;
 }
-
 
 
 //
@@ -246,6 +286,13 @@ BOOL InitInstance(HINSTANCE hInstance, int nCmdShow)
    {
       return FALSE;
    }
+
+   SetProcessDpiAwarenessContext( DPI_AWARENESS_CONTEXT_PER_MONITOR_AWARE_V2 );
+   App* pApp = new App( hWnd );
+   g_pApp = SharedPtr<App>( pApp );
+
+   CoreEngine* pEngine = new CoreEngine();
+   g_pEngine = SharedPtr<CoreEngine>( pEngine );
 
    ShowWindow(hWnd, nCmdShow);
    UpdateWindow(hWnd);

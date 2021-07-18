@@ -2,12 +2,13 @@
 #include <assert.h>
 #include <map>
 
+#include "CoreObject.h"
 #include "CoreTypes.h"
+
 #include "LinkedList.h"
 #include "SharedPtr.h"
 
 class HeapManager;
-
 
 class HeapNode
 {
@@ -39,8 +40,13 @@ private:
 class HeapManager
 {
 public:
-	friend void* Electricity_New( size_t cbSize, const char* szFile, size_t nLineNo );
-	friend void Electricity_Delete( void* pBuffer );
+	friend void* Electricity_Malloc( size_t cbSize
+#ifdef _DEBUG
+		, const char* szFile
+		, size_t nLineNo
+#endif
+);
+	friend void Electricity_Free( void* pBuffer );
 
 	bool Initialize();
 	bool ShutDown();
@@ -82,41 +88,43 @@ private:
 	static std::map<byte*, HeapNode*> s_BufToNodeMap;
 };
 
-void* Electricity_New( size_t cbSize
+void* Electricity_Malloc( size_t cbSize
 #ifdef _DEBUG
 	, const char* szFile, size_t nLineNo 
 #endif
 );
 
-void Electricity_Delete( void* pBuffer );
+void Electricity_Free( void* pBuffer );
 
 #ifdef _DEBUG
-	#define gcnew(type) Electricity_New(sizeof(type), __FILE__, __LINE__)
+	#define gcnew(type) Electricity_Malloc(sizeof(type), __FILE__, __LINE__)
 #else 
 	#define gcnew(type) Electricity_New(sizeof(type))
 #endif
 
-#define gcdelete( pObj ) Electricity_Delete( pObj );
+#define gcdelete( pObj ) Electricity_Free( pObj );
 
 template <class Type>
 SharedPtr<Type> __GCNew__
 (
 #ifdef _DEBUG
-	const char* szFile, size_t uLineNumber
+	const char* szFile
+	, size_t uLineNumber
 #endif
 )
 {
-	void* pBuffer = Electricity_New(
-		sizeof( Type )
+	void* pBuffer = new Type(
 #ifdef _DEBUG
-		, szFile
+		szFile
 		, uLineNumber
 #endif
 	);
 	assert( pBuffer );
-	static_cast< byte* >( pBuffer );
-	Type* pType = new ( pBuffer ) Type();
-	return SharedPtr<Type>( pType );
+	Type* pType = reinterpret_cast< Type* >( pBuffer );
+	assert( pType );
+
+	SharedPtr<Type> asShared( pType );
+	return asShared;
 }
 #ifdef _DEBUG
 #define CreateObject(Type) __GCNew__<Type>(__FILE__, __LINE__)
@@ -128,8 +136,17 @@ template <class Type>
 void __GCDelete__( Type* self)
 {
 	self->~Type(); // Manually call destructor to de-initialise type.
-	Electricity_Delete( self );
+	Electricity_Free( self );
 	self = nullptr;
 }
 
 #define DeleteObject(object) __GCDelete__(object)
+
+// Function signatures typedef-ed for easy befriending where needed.
+#ifdef _DEBUG
+#define __ALLOC__ void* Electricity_Malloc( const size_t cbSize, const char* szFile, size_t nLineNo)
+#else
+#define __ALLOC__ void* Electricity_Malloc( const size_t cbSize)
+#endif
+
+#define __DEALLOC__ void Electricity_Free( void* pBuffer )

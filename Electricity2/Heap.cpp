@@ -84,13 +84,13 @@ HeapManager::Initialize()
 {
 	bool bInitialized	 = false;
 
-	PlatformMemory::Initialize();
+	Platform::Memory::Initialize();
 
 	const uint32 HEAP_INIITAL_SIZE	= ( 64 * 1024 * 1024 ); // 64 MB.
 	HeapNode* pInitialHeap			= ReservePage( HEAP_INIITAL_SIZE );
 
 	bInitialized					= ( pInitialHeap != nullptr );
-	s_uMemAlignmentSize				= PlatformMemory::GetMinAllocSize();
+	s_uMemAlignmentSize				= Platform::Memory::GetMinAllocSize();
 	
 	return bInitialized;
 }
@@ -299,7 +299,7 @@ HeapManager::ReservePage( const uint32 uSize, byte* InitialContent /* = nullptr 
 	// Reserve the actual memory.
 	const uint32 uHeaderedSize	= GetHeaderedSize( uSize );
 	const uint32 uAlignedSize	= GetAlignedSize( uHeaderedSize );
-	byte* pMemory				= reinterpret_cast<byte*>( PlatformMemory::InternalAlloc( uHeaderedSize ) );
+	byte* pMemory				= reinterpret_cast<byte*>( Platform::Memory::InternalAlloc( uHeaderedSize ) );
 	if ( pMemory )
 	{
 		// Now use the memory to construct the node, consisting of both payload and metadata.
@@ -313,7 +313,7 @@ HeapManager::ReservePage( const uint32 uSize, byte* InitialContent /* = nullptr 
 			// We don't really have a way of validating this second buffer is of the same size.
 			// We'll just have to trust the higher levels to pass the right stuff.
 			// And pray we don't explode into a cloud of security vulnerabilities.
-			PlatformMemory::Copy( InitialContent, pData, uSize );
+			Platform::Memory::Copy( InitialContent, pData, uSize );
 		}
 
 		MarkFree( pPageNode );
@@ -335,7 +335,7 @@ HeapManager::ReleasePage( HeapNode& Node )
 	Node.m_pNext	= nullptr;
 	Node.m_Buffer	= nullptr;
 
-	assert( PlatformMemory::Free( &Node ) );
+	assert( Platform::Memory::Free( &Node ) );
 
 
 	return pNext;
@@ -361,10 +361,13 @@ HeapManager::CheckForMemoryLeak()
 
 #endif
 
-void* Electricity_New( size_t cbSize
-#ifdef _DEBUG
-	, const char* szFile, size_t nLineNo 
-#endif
+void* 
+Electricity_Malloc( const size_t cbSize 
+	#ifdef _DEBUG
+	,const char* szFile
+	, size_t nLineNo
+	#endif
+ 
 )
 {
 	HeapNode *pNode = HeapManager::Allocate( cbSize
@@ -380,14 +383,61 @@ void* Electricity_New( size_t cbSize
 	return pNode->GetBuffer();
 }
 
-void Electricity_Delete( void* pBuffer )
+void 
+Electricity_Free( void* pBuffer )
 {
 	assert( pBuffer );
 	
 	byte* pByteBuffer	= static_cast< byte* >( pBuffer );
-	auto pair			= HeapManager::s_BufToNodeMap.find( pByteBuffer );
-	assert( pair != HeapManager::s_BufToNodeMap.end() );
-	
-	HeapNode* pNode		= pair->second;
-	pNode->Release();
+	// NOTE(Dino):
+	// Stack allocations won't go through new, but will still result in the destructor call.
+	// That'll cause us to end up here, but not finding anything.
+	if ( HeapManager::s_BufToNodeMap.size() > 0 )
+	{
+		auto pair			= HeapManager::s_BufToNodeMap.find( pByteBuffer );
+		if ( pair != HeapManager::s_BufToNodeMap.end() )
+		{
+			HeapNode* pNode		= pair->second;
+			pNode->Release();
+		}
+	}
+}
+
+void*
+operator new( size_t n
+#ifdef _DEBUG
+	, const char* szFile
+	, size_t nLineNo
+#endif
+	)
+{
+
+	return Electricity_Malloc( n
+#ifdef _DEBUG
+		, szFile
+		, nLineNo
+#endif
+	);
+}
+
+void*
+operator new[]( size_t n
+#ifdef _DEBUG
+	, const char* szFile
+	, size_t nLineNo
+#endif
+	)
+{
+	return Electricity_Malloc( n
+#ifdef _DEBUG
+		, szFile
+		, nLineNo
+#endif
+	);
+}
+
+void
+operator delete( void* pBuffer )
+{
+	Electricity_Free( pBuffer );
 }

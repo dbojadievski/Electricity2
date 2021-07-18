@@ -15,19 +15,13 @@ public:
 	{
 	};
 
-	explicit SharedPtr( Type* pData ) noexcept
+	SharedPtr( Type* pData ) noexcept
 		: m_pData( pData )
 		, m_puiRefCount( new atomic<uint32>( 1 ) )
 	{
 	}
 
-	SharedPtr( const Type* pData ) noexcept
-		: m_pData( pData )
-		, m_puiRefCount( new atomic<uint32>( 1 ) )
-	{
-	}
-
-	SharedPtr( SharedPtr& InOriginal ) noexcept
+	SharedPtr<Type>( const SharedPtr<Type>& InOriginal ) noexcept
 		: m_pData( InOriginal.m_pData )
 		, m_puiRefCount( InOriginal.m_puiRefCount )
 	{
@@ -47,6 +41,16 @@ public:
 		return this;
 	}
 
+	bool operator==( const SharedPtr& InOriginal ) const noexcept
+	{
+		return ( m_pData == InOriginal.m_pData );
+	}
+
+	bool operator==( SharedPtr& InOriginal ) const noexcept
+	{
+		return ( m_pData == InOriginal.m_pData );
+	}
+
 	SharedPtr( SharedPtr&& InOriginal ) noexcept
 		: m_pData( InOriginal.m_pData )
 		, m_puiRefCount( InOriginal.m_puiRefCount )
@@ -55,9 +59,9 @@ public:
 		InOriginal.m_puiRefCount = nullptr;
 	}
 
-	SharedPtr& operator=( SharedPtr&& InOriginal ) noexcept
+	SharedPtr& operator=( SharedPtr<Type>&& InOriginal ) noexcept
 	{
-		if ( InOriginal != this )
+		if ( &InOriginal != this )
 		{
 			m_pData = InOriginal.m_pData;
 			m_puiRefCount = InOriginal.m_puiRefCount;
@@ -65,6 +69,8 @@ public:
 			InOriginal.m_pData = nullptr;
 			InOriginal.m_puiRefCount = nullptr;
 		}
+
+		return *this;
 	}
 
 	template <typename DerivedType>
@@ -130,9 +136,9 @@ public:
 		return m_pData;
 	}
 
-	Type operator->() const noexcept
+	Type* operator->() const noexcept
 	{
-		return *m_pData;
+		return m_pData;
 	}
 
 	bool IsValid() const noexcept
@@ -176,6 +182,7 @@ private:
 		}
 	}
 
+public:
 	Type* m_pData;
 	atomic<uint32>* m_puiRefCount;
 };

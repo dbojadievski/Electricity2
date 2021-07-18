@@ -1,13 +1,14 @@
 #pragma once
 
 #include "CoreTypes.h"
+#include "CoreObject.h"
 #include "ThreadStart.h"
 #include "PlatformThread.h"
 
 class CoreFiber;
 
 class CoreThreadStart;
-class CoreThread
+class CoreThread/* : public CoreObject*/
 {
 	friend class CoreFiber;
 public:
@@ -18,7 +19,6 @@ public:
 
 	~CoreThread() noexcept;
 	
-	uint32 GetID() const noexcept;
 	bool IsRunning() const noexcept;
 
 	bool IsValid() const noexcept;
@@ -69,7 +69,6 @@ public:
 	static uint32 GetCurrentThreadID()  noexcept;
 	static CoreThread GetCurrentThread() noexcept;
 private:
-	uint32				m_uID;
 	CoreThreadStatus	m_Status;
 
 	PPlatformThread		m_pPlatformThread;

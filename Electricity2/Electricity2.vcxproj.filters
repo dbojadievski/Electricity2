@@ -67,6 +67,27 @@
     <Filter Include="Header Files\App\UnitTests">
       <UniqueIdentifier>{9662ebb5-3bf6-47f4-99c3-fd6a67902277}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Header Files\Settings">
+      <UniqueIdentifier>{82ff47d8-7f8f-4251-86c2-60ff9a23b493}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Settings">
+      <UniqueIdentifier>{81da1845-7298-4896-8b7c-e85bafcf31dd}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Core\SettingsSystem">
+      <UniqueIdentifier>{7c7de5d6-d48e-4077-948e-8a1adbac6132}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Core\SettingsSystem">
+      <UniqueIdentifier>{8a54ec0d-b665-41f5-8b46-abadfd6b16fd}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Platform\PlatformSettings">
+      <UniqueIdentifier>{65b82cd3-330e-4c8a-a10a-b62534baf16e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Platform\PlatformSettings">
+      <UniqueIdentifier>{cdee27e5-c2a5-4749-be9c-01439d83bf0c}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Core\ObjectUtils">
+      <UniqueIdentifier>{3941a5aa-4d00-405c-b3e8-a750086cf371}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="framework.h">
@@ -111,9 +132,6 @@
     <ClInclude Include="PlatformMemory.h">
       <Filter>Header Files\Platform</Filter>
     </ClInclude>
-    <ClInclude Include="GCObject.h">
-      <Filter>Header Files\Core</Filter>
-    </ClInclude>
     <ClInclude Include="Thread.h">
       <Filter>Header Files\Core\Multithreading</Filter>
     </ClInclude>
@@ -143,6 +161,45 @@
     </ClInclude>
     <ClInclude Include="UnitTests_CmdLineParser.h">
       <Filter>Header Files\App\UnitTests</Filter>
+    </ClInclude>
+    <ClInclude Include="DisplaySettings.h">
+      <Filter>Header Files\Settings</Filter>
+    </ClInclude>
+    <ClInclude Include="CoreSystem.h">
+      <Filter>Header Files\Core</Filter>
+    </ClInclude>
+    <ClInclude Include="SettingsSystem.h">
+      <Filter>Header Files\Core\SettingsSystem</Filter>
+    </ClInclude>
+    <ClInclude Include="PlatformDisplaySettings.h">
+      <Filter>Header Files\Platform\PlatformSettings</Filter>
+    </ClInclude>
+    <ClInclude Include="PlatformAppDefines.h">
+      <Filter>Header Files\App</Filter>
+    </ClInclude>
+    <ClInclude Include="App.h">
+      <Filter>Header Files\App</Filter>
+    </ClInclude>
+    <ClInclude Include="CoreEngine.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="CoreTimer.h">
+      <Filter>Header Files\Core</Filter>
+    </ClInclude>
+    <ClInclude Include="PlatformTime.h">
+      <Filter>Header Files\Platform</Filter>
+    </ClInclude>
+    <ClInclude Include="CoreObject.h">
+      <Filter>Header Files\Core</Filter>
+    </ClInclude>
+    <ClInclude Include="CoreObjectCodeGen.h">
+      <Filter>Header Files\Core\ObjectUtils</Filter>
+    </ClInclude>
+    <ClInclude Include="PlatformUtils.h">
+      <Filter>Header Files\Platform</Filter>
+    </ClInclude>
+    <ClInclude Include="UUID.h">
+      <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -181,6 +238,39 @@
     </ClCompile>
     <ClCompile Include="CommandLineParser.cpp">
       <Filter>Source Files\App</Filter>
+    </ClCompile>
+    <ClCompile Include="DisplaySettings.cpp">
+      <Filter>Source Files\Settings</Filter>
+    </ClCompile>
+    <ClCompile Include="SettingsSystem.cpp">
+      <Filter>Source Files\Core\SettingsSystem</Filter>
+    </ClCompile>
+    <ClCompile Include="PlatformDisplaySettings_Windows.cpp">
+      <Filter>Source Files\Platform\PlatformSettings</Filter>
+    </ClCompile>
+    <ClCompile Include="PlatformAppDefines_Windows.cpp">
+      <Filter>Source Files\App</Filter>
+    </ClCompile>
+    <ClCompile Include="App.cpp">
+      <Filter>Source Files\App</Filter>
+    </ClCompile>
+    <ClCompile Include="CoreEngine.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="CoreTimer.cpp">
+      <Filter>Source Files\Core</Filter>
+    </ClCompile>
+    <ClCompile Include="PlatformTime_Windows.cpp">
+      <Filter>Source Files\Platform</Filter>
+    </ClCompile>
+    <ClCompile Include="CoreObject.cpp">
+      <Filter>Source Files\Core</Filter>
+    </ClCompile>
+    <ClCompile Include="UUID.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="PlatformUtils_Windows.cpp">
+      <Filter>Source Files\Platform</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

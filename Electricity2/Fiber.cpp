@@ -42,8 +42,7 @@ CoreFiber::CoreFiber( CoreThread& other ) noexcept
 	, m_bScheduled( false )
 	, m_pPlatformFiber( nullptr )
 {
-	assert( other.m_uID || true ); // NOTE(Dino): ID manager hasn't been written yet.
-	assert( other.m_PlatformThreadID );
+	assert( other.m_PlatformThreadID != 0 );
 	assert( other.m_pPlatformThread );
 
 	m_pPlatformFiber		= PlatformFiber::FromThread( other.m_pPlatformThread );
@@ -52,7 +51,6 @@ CoreFiber::CoreFiber( CoreThread& other ) noexcept
 	if ( bConverted )
 	{
 		m_bScheduled				= true;
-		other.m_uID					= 0;
 		other.m_PlatformThreadID	= 0;
 		other.m_pPlatformThread		= nullptr;
 	}

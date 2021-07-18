@@ -2,9 +2,8 @@
 #include "Thread.h"
 
 /* CoreThread class */
-CoreThread::CoreThread() noexcept
-	: m_uID( 0 )
-	, m_Status( CoreThreadStatus::Invalid )
+CoreThread::CoreThread() noexcept :
+	m_Status( CoreThreadStatus::Invalid )
 	, m_pPlatformThread( nullptr )
 	, m_PlatformThreadID( 0 )
 {
@@ -13,20 +12,17 @@ CoreThread::CoreThread() noexcept
 CoreThread::CoreThread( CoreThread&& other ) noexcept
 	: CoreThread()
 {
-	m_uID				= other.m_uID;
 	m_Status			= other.m_Status;
 	m_pPlatformThread	= other.m_pPlatformThread;
 	m_PlatformThreadID	= other.m_PlatformThreadID;
 
-	other.m_uID					= 0;
 	other.m_Status				= CoreThreadStatus::Invalid;
 	other.m_pPlatformThread		= nullptr;
 	other.m_PlatformThreadID	= 0;
 }
 
-CoreThread::CoreThread( const CoreThreadStart& threadStart ) noexcept
-	: m_uID( 0 )
-	, m_Status( CoreThreadStatus::Invalid)
+CoreThread::CoreThread( const CoreThreadStart& threadStart ) noexcept :
+	m_Status( CoreThreadStatus::Invalid)
 	, m_PlatformThreadID( 0 )
 	, m_pPlatformThread( nullptr )
 {	
@@ -73,17 +69,10 @@ CoreThread::CoreThread( const CoreThreadStart& threadStart ) noexcept
 
 CoreThread::~CoreThread() noexcept
 {
-	m_uID		= 0;
 	m_Status	= CoreThreadStatus::Invalid;
 
 	m_PlatformThreadID	= 0;
 	m_pPlatformThread	= nullptr;
-}
-
-uint32
-CoreThread::GetID() const noexcept
-{
-	return m_uID;
 }
 
 bool
@@ -95,7 +84,7 @@ CoreThread::IsRunning() const noexcept
 bool
 CoreThread::IsValid() const noexcept
 {
-	return ( ( m_uID != 0 ) && ( m_Status != CoreThreadStatus::Invalid ) );
+	return ( ( m_PlatformThreadID != 0 ) && ( m_Status != CoreThreadStatus::Invalid ) );
 }
 
 CoreThreadStatus
@@ -150,7 +139,7 @@ CoreThread::Join( const uint64 uTime /*  = 0 */) noexcept
 	assert( bIsJoinable );
 
 	uint32 uCurrThreadID	= GetCurrentThreadID();
-	if ( uCurrThreadID == m_uID ) // If we wait on ourselves to join, then a deadlock would occur.
+	if ( uCurrThreadID == m_PlatformThreadID ) // If we wait on ourselves to join, then a deadlock would occur.
 	{
 		threadWaitResult	= PlatformThreadWaitResult::WouldDeadlock;
 	}
