@@ -148,36 +148,61 @@ uint32 g_uVar = 1;
 float g_fVar = 1.0f;
 String g_sVar = "Sample";
 
+bool HelloConsole( const String& string ) noexcept
+{
+    std::cout << "Hello from the command console!" << std::endl;
+    return true;
+}
+
 void
 ConsoleSystemTest() noexcept
 {
-    ConsoleSystem::AddCVar( "boolVar", &g_bVar );
-    bool bVar = ConsoleSystem::GetCVarBool( "boolVar" );
-    assert( bVar == true );
-    ConsoleSystem::SetCVarBool( "boolVar", false );
-	bVar = ConsoleSystem::GetCVarBool( "boolVar" );
-	assert( bVar == false );
+    {
+        ConsoleSystem::AddCVar( "boolVar", &g_bVar );
+        bool bVar = ConsoleSystem::GetCVarBool( "boolVar" );
+        assert( bVar == true );
+        ConsoleSystem::SetCVarBool( "boolVar", false );
+	    bVar = ConsoleSystem::GetCVarBool( "boolVar" );
+	    assert( bVar == false );
+    }
 
-    ConsoleSystem::AddCVar( "intVar", &g_uVar );
-    uint32 uVar = ConsoleSystem::GetCVarInteger( "intVar" );
-    assert( uVar == 1 );
-	ConsoleSystem::SetCVarInteger( "intVar", 0 );
-    uVar = ConsoleSystem::GetCVarInteger( "intVar" );
-	assert( ( uVar == 0 ) == true );
+    {
+        ConsoleSystem::AddCVar( "intVar", &g_uVar );
+        uint32 uVar = ConsoleSystem::GetCVarInteger( "intVar" );
+        assert( uVar == 1 );
+	    ConsoleSystem::SetCVarInteger( "intVar", 0 );
+        uVar = ConsoleSystem::GetCVarInteger( "intVar" );
+	    assert( ( uVar == 0 ) == true );
+    }
 
-    ConsoleSystem::AddCVar( "floatVar", &g_fVar );
-    float fVar = ConsoleSystem::GetCVarFloat( "floatVar" );
-    assert( fVar == 1.0f );
-	ConsoleSystem::SetCVarFloat( "floatVar", 0.0f );
-    fVar = ConsoleSystem::GetCVarFloat( "floatVar" );
-	assert( ( fVar == 0.0f ) == true );
+    {
+        ConsoleSystem::AddCVar( "floatVar", &g_fVar );
+        float fVar = ConsoleSystem::GetCVarFloat( "floatVar" );
+        assert( fVar == 1.0f );
+	    ConsoleSystem::SetCVarFloat( "floatVar", 0.0f );
+        fVar = ConsoleSystem::GetCVarFloat( "floatVar" );
+	    assert( ( fVar == 0.0f ) == true );
+    }
 
-    ConsoleSystem::AddCVar( "stringVar", &g_sVar );
-	String var = ConsoleSystem::GetCVarString( "stringVar" );
-	assert( var == "Sample" );
-	ConsoleSystem::SetCVarString( "stringVar", "sample" );
-    var = ConsoleSystem::GetCVarString( "stringVar" );
-	assert( var == "sample" );
+    {
+        ConsoleSystem::AddCVar( "stringVar", &g_sVar );
+	    String var = ConsoleSystem::GetCVarString( "stringVar" );
+	    assert( var == "Sample" );
+	    ConsoleSystem::SetCVarString( "stringVar", "sample" );
+        var = ConsoleSystem::GetCVarString( "stringVar" );
+	    assert( var == "sample" );
+    }
+
+    {
+        const bool bAddedCommand = ConsoleSystem::AddCommand( "Console.PrintHello", &HelloConsole );
+        assert( bAddedCommand );
+        
+        const bool bParsedCmd = ConsoleSystem::FeedLine( "Console.PrintHello" );
+        assert( bParsedCmd );
+
+        const bool bParsedModifyCmd = ConsoleSystem::FeedLine( "boolVar 1" );
+        assert( bParsedModifyCmd && ( g_bVar == false )  );
+    }
 }
 
 // Global Variables:
