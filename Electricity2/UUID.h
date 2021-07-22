@@ -31,7 +31,7 @@ namespace Electricity
 
 		static UUID NewUUID() noexcept;
 
-	private:
+	public:
 		UUID() noexcept;
 	};
 

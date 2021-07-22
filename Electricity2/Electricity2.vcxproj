@@ -147,6 +147,8 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="App.h" />
+    <ClInclude Include="ConsoleSystem.h" />
+    <ClInclude Include="CoreContainers.h" />
     <ClInclude Include="CoreEngine.h" />
     <ClInclude Include="CoreObject.h" />
     <ClInclude Include="CoreObjectCodeGen.h" />
@@ -158,6 +160,7 @@
     <ClInclude Include="PlatformTime.h" />
     <ClInclude Include="PlatformUtils.h" />
     <ClInclude Include="SettingsSystem.h" />
+    <ClInclude Include="StringUtils.h" />
     <ClInclude Include="UnitTests_CmdLineParser.h" />
     <ClInclude Include="CommandLineParser.h" />
     <ClInclude Include="CoreTypes.h" />
@@ -182,13 +185,16 @@
     <ClInclude Include="UnitTests.h" />
     <ClInclude Include="UnitTests_LinkedList.h" />
     <ClInclude Include="UnitTests_MemoryHeap.h" />
+    <ClInclude Include="UnitTests_StringUtils.h" />
     <ClInclude Include="UUID.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="App.cpp" />
     <ClCompile Include="CommandLineParser.cpp" />
+    <ClCompile Include="ConsoleSystem.cpp" />
     <ClCompile Include="CoreEngine.cpp" />
     <ClCompile Include="CoreObject.cpp" />
+    <ClCompile Include="CoreSystem.cpp" />
     <ClCompile Include="CoreTimer.cpp" />
     <ClCompile Include="DisplaySettings.cpp" />
     <ClCompile Include="Electricity2.cpp" />
@@ -204,6 +210,7 @@
     <ClCompile Include="PlatformTime_Windows.cpp" />
     <ClCompile Include="PlatformUtils_Windows.cpp" />
     <ClCompile Include="SettingsSystem.cpp" />
+    <ClCompile Include="StringUtils.cpp" />
     <ClCompile Include="Thread.cpp" />
     <ClCompile Include="ThreadStart.cpp" />
     <ClCompile Include="UnitTests.cpp" />

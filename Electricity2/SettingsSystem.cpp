@@ -51,3 +51,5 @@ SettingsSystem::GetMemorySizeInMegabytes() const noexcept
 {
 	return m_uMemorySize;
 }
+
+INIT_CLASS_BODY( SettingsSystem )

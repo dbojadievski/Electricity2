@@ -1,12 +1,7 @@
 #include "CommandLineParser.h"
-#include <vector>
 
-typedef std::string String;
-typedef std::map<String, String> StringMap;
-typedef std::vector<String> StringArray;
-
-// Forward declarations of useful utility functions.
-void ExplodeString( const String& sString, StringArray& aTokens, const char delimiter = ' ' );
+#include "CoreContainers.h"
+#include "StringUtils.h"
 
 // CommandLineParser implementation.
 
@@ -77,53 +72,14 @@ CommandLineParser::ParseCmdLine() noexcept
 	if ( !m_sCmdLine.empty() )
 	{
 		StringArray aArgValPairs;
-		ExplodeString( m_sCmdLine, aArgValPairs );
+		Electricity::Utils::ExplodeString( m_sCmdLine, aArgValPairs );
 		for ( const String& sArgValPair : aArgValPairs )
 		{
 			StringArray aArgValTokens;
-			ExplodeString( sArgValPair, aArgValTokens, '=' );
+			Electricity::Utils::ExplodeString( sArgValPair, aArgValTokens, '=' );
 			String arg	= aArgValTokens[ 0 ];
 			String val	= ( aArgValTokens.size() == 2 ) ? aArgValTokens[ 1 ] : String( "" );
 			m_mTokens.insert( std::make_pair( arg, val ) );
 		}
-	}
-}
-
-// Useful utility functions.
-void 
-ExplodeString( const String& sString, StringArray& aTokens, const char delimiter /* = " " */ )
-{
-	// Sample case:
-	// meaning=42 senselessness=41
-	uint32 uIdxTokenStart = 0;
-
-	bool bInToken		= false;
-	uint32 uLength		= sString.length();
-	for ( uint32 uIdx	= 0; uIdx < uLength; uIdx++ )
-	{
-		const char c	= sString[ uIdx ];
-		if ( c == delimiter && bInToken )
-		{
-			const uint32 uTokenLength = ( uIdx - uIdxTokenStart );
-			const String& sToken = sString.substr( uIdxTokenStart, uTokenLength );
-			aTokens.push_back( sToken );
-		
-			uIdxTokenStart	= uIdx + 1;
-			bInToken		= false;
-		}
-		else if ( c != delimiter && !bInToken )
-		{
-			bInToken		= true;
-			uIdxTokenStart	= uIdx;
-		}
-	}
-
-	// We need to deal with the rest of the buffer.
-	if ( bInToken )
-	{
-		const bool bIsLastDelimiter = ( sString[ uLength ] == delimiter );
-		uint32 uTokenLenth			= ( bIsLastDelimiter ? uLength - 1 : uLength );
-		const String& sToken		= sString.substr( uIdxTokenStart, uTokenLenth );
-		aTokens.push_back( sToken );
 	}
 }

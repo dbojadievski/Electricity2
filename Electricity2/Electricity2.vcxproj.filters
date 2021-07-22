@@ -88,6 +88,12 @@
     <Filter Include="Header Files\Core\ObjectUtils">
       <UniqueIdentifier>{3941a5aa-4d00-405c-b3e8-a750086cf371}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Header Files\Core\ConsoleSystem">
+      <UniqueIdentifier>{ec9ddbb7-9054-471c-bc33-4e6110489ed7}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Core\ConsoleSystem">
+      <UniqueIdentifier>{08eaa516-6d0e-4cbe-8ef1-7691a7a58d57}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="framework.h">
@@ -201,6 +207,18 @@
     <ClInclude Include="UUID.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="ConsoleSystem.h">
+      <Filter>Header Files\Core\ConsoleSystem</Filter>
+    </ClInclude>
+    <ClInclude Include="CoreContainers.h">
+      <Filter>Header Files\Core</Filter>
+    </ClInclude>
+    <ClInclude Include="StringUtils.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="UnitTests_StringUtils.h">
+      <Filter>Header Files\Testing</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Electricity2.cpp">
@@ -271,6 +289,15 @@
     </ClCompile>
     <ClCompile Include="PlatformUtils_Windows.cpp">
       <Filter>Source Files\Platform</Filter>
+    </ClCompile>
+    <ClCompile Include="CoreSystem.cpp">
+      <Filter>Source Files\Core</Filter>
+    </ClCompile>
+    <ClCompile Include="ConsoleSystem.cpp">
+      <Filter>Source Files\Core\ConsoleSystem</Filter>
+    </ClCompile>
+    <ClCompile Include="StringUtils.cpp">
+      <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

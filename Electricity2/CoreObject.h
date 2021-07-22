@@ -14,13 +14,14 @@
 typedef uint64 ObjectID;
 
 class CoreObject;
-typedef std::vector<CoreObject*> ObjectArray;
-typedef std::map<ObjectID, CoreObject*> ObjectMap;
+typedef std::vector<SharedPtr<CoreObject>> ObjectArray;
+typedef std::map<ObjectID, SharedPtr<CoreObject>> ObjectMap;
+typedef ObjectArray::const_iterator ConstObjectIterator;
+typedef ObjectArray::iterator ObjectIterator;
 
 typedef Electricity::UUID ClassID;
 typedef std::vector<ClassID> ClassIDList;
 typedef std::set<ClassID> ClassIDSet;
-
 
 class CoreObject
 {
@@ -47,6 +48,7 @@ public:
 	virtual ~CoreObject() noexcept;
 
 public:
+	virtual ClassID GetClass() const noexcept;
 	ObjectID GetID() const noexcept;
 	static CoreObject* GetByID( const ObjectID uID ) noexcept;
 	void Initialize( const Initializer& initializer ) noexcept;
@@ -61,9 +63,15 @@ public:
 		return ( it != m_suInheritanceChain.end() );
 	}
 
+	static ConstObjectIterator GetInstances() noexcept;
+
+private:
+	void Construct() noexcept;
+
 protected:
 	ObjectID	m_uID;
 	ClassIDSet m_suInheritanceChain;
+
 private:
-	static inline std::vector<SharedPtr<CoreObject>> s_apInstances;
+	static inline ObjectArray s_apInstances;
 };

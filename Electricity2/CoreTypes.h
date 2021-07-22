@@ -1,6 +1,8 @@
 #pragma once
 
 #include <stdint.h>
+#include <string>
+
 typedef int8_t int8;
 typedef int8 sbyte;
 
@@ -20,3 +22,5 @@ typedef uint64_t uint64;
 typedef uint64 CORE_QWORD;
 
 typedef uint32 Handle;
+
+typedef std::string String;

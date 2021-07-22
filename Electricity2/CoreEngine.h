@@ -4,6 +4,7 @@
 #include "CoreTypes.h"
 #include "SettingsSystem.h"
 #include "SharedPtr.h"
+#include "CoreContainers.h"
 
 class CoreEngine
 {

@@ -11,6 +11,7 @@
 #include "Heap.h"
 #include "UnitTests_MemoryHeap.h"
 #include "UnitTests_CmdLineParser.h"
+#include "UnitTests_StringUtils.h"
 
 #include "Thread.h"
 #include "ThreadStart.h"
@@ -20,8 +21,9 @@
 #include <future>
 #include <iostream>
 #include "CoreEngine.h"
-
+#include "ConsoleSystem.h"
 #include "SettingsSystem.h"
+
 #define MAX_LOADSTRING 100
 
 HeapManager Manager;
@@ -136,39 +138,46 @@ RunThreadTest()
     std::cout << "Computed sum at: " << iSum << std::endl;
 }
 
-class Parent : public CoreObject
-{
-	INIT_CLASS( Parent )
-public:
-	int x;
-};
-
-class Child : public Parent
-{
-	INIT_CLASS( Child )
-public:
-	int y;
-};
-
-void
-RunInheritanceTest()
-{
-    SharedPtr<Parent> pParent = CreateObject( Parent );
-    SharedPtr<Child> pChild = CreateObject( Child );
-
-    ObjectID uParentID = pParent->GetID();
-    ObjectID uChildID = pChild->GetID();
-    assert( uParentID != uChildID );
-
-    ClassID uParentClassId = Parent::GetClassId();
-    ClassID uChildClassId = Child::GetClassId();
-    
-    assert( uParentClassId != uChildClassId );
-}
-
 void
 NewTest()
 {
+}
+
+bool g_bVar = true;
+uint32 g_uVar = 1;
+float g_fVar = 1.0f;
+String g_sVar = "Sample";
+
+void
+ConsoleSystemTest() noexcept
+{
+    ConsoleSystem::AddCVar( "boolVar", &g_bVar );
+    bool bVar = ConsoleSystem::GetCVarBool( "boolVar" );
+    assert( bVar == true );
+    ConsoleSystem::SetCVarBool( "boolVar", false );
+	bVar = ConsoleSystem::GetCVarBool( "boolVar" );
+	assert( bVar == false );
+
+    ConsoleSystem::AddCVar( "intVar", &g_uVar );
+    uint32 uVar = ConsoleSystem::GetCVarInteger( "intVar" );
+    assert( uVar == 1 );
+	ConsoleSystem::SetCVarInteger( "intVar", 0 );
+    uVar = ConsoleSystem::GetCVarInteger( "intVar" );
+	assert( ( uVar == 0 ) == true );
+
+    ConsoleSystem::AddCVar( "floatVar", &g_fVar );
+    float fVar = ConsoleSystem::GetCVarFloat( "floatVar" );
+    assert( fVar == 1.0f );
+	ConsoleSystem::SetCVarFloat( "floatVar", 0.0f );
+    fVar = ConsoleSystem::GetCVarFloat( "floatVar" );
+	assert( ( fVar == 0.0f ) == true );
+
+    ConsoleSystem::AddCVar( "stringVar", &g_sVar );
+	String var = ConsoleSystem::GetCVarString( "stringVar" );
+	assert( var == "Sample" );
+	ConsoleSystem::SetCVarString( "stringVar", "sample" );
+    var = ConsoleSystem::GetCVarString( "stringVar" );
+	assert( var == "sample" );
 }
 
 // Global Variables:
@@ -198,8 +207,8 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
     UnitTest_CmdLineParser ParserTest;
     assert(ParserTest());
     RunThreadTest();
-    //RunFiberTest();
-    RunInheritanceTest();
+    RunFiberTest();
+    ConsoleSystemTest();
 #endif
     
     // Can we do futures in our version of C++?
