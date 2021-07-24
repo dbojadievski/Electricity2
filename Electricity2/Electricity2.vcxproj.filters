@@ -94,6 +94,15 @@
     <Filter Include="Source Files\Core\ConsoleSystem">
       <UniqueIdentifier>{08eaa516-6d0e-4cbe-8ef1-7691a7a58d57}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Header Files\Math">
+      <UniqueIdentifier>{380b73a8-ad4b-4185-9933-e0dbadbd28b0}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Math">
+      <UniqueIdentifier>{29f239e9-118d-4ec0-95d8-3bc3ff20d0a8}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Math\Vectors">
+      <UniqueIdentifier>{4c91d761-5607-4e7c-85b8-e996ccccd8a6}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="framework.h">
@@ -218,6 +227,21 @@
     </ClInclude>
     <ClInclude Include="UnitTests_StringUtils.h">
       <Filter>Header Files\Testing</Filter>
+    </ClInclude>
+    <ClInclude Include="Vector.h">
+      <Filter>Header Files\Math</Filter>
+    </ClInclude>
+    <ClInclude Include="Math.h">
+      <Filter>Header Files\Math</Filter>
+    </ClInclude>
+    <ClInclude Include="Vector2.h">
+      <Filter>Header Files\Math\Vectors</Filter>
+    </ClInclude>
+    <ClInclude Include="Vector3.h">
+      <Filter>Header Files\Math\Vectors</Filter>
+    </ClInclude>
+    <ClInclude Include="Vector4.h">
+      <Filter>Header Files\Math\Vectors</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

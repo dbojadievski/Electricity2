@@ -24,6 +24,10 @@
 #include "ConsoleSystem.h"
 #include "SettingsSystem.h"
 
+#include "Vector.h"
+
+using namespace Electricity::Math;
+
 #define MAX_LOADSTRING 100
 
 HeapManager Manager;
@@ -205,6 +209,40 @@ ConsoleSystemTest() noexcept
     }
 }
 
+void
+RunVectorTest()
+{
+    {
+        // Vector2 test.
+        CoreVec2 a;
+        CoreVec2 b( 1, 1 );
+
+        assert( a + b == b );
+        assert( b - b == a );
+        assert( 0.0f * b == a );
+    }
+
+    {
+        // Vector3 test.
+		CoreVec3 a;
+		CoreVec3 b( 1, 1, 1 );
+
+		assert( a + b == b );
+		assert( b - b == a );
+		assert( 0.0f * b == a );
+    }
+
+	{
+		// Vector4 test.
+		CoreVec4 a;
+		CoreVec4 b( 1, 1, 1, 1 );
+
+		assert( a + b == b );
+		assert( b - b == a );
+		assert( 0.0f * b == a );
+	}
+}
+
 // Global Variables:
 HINSTANCE hInst;                                // current instance
 WCHAR szTitle[MAX_LOADSTRING];                  // The title bar text
@@ -234,6 +272,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
     RunThreadTest();
     RunFiberTest();
     ConsoleSystemTest();
+    RunVectorTest();
 #endif
     
     // Can we do futures in our version of C++?
@@ -404,8 +443,5 @@ INT_PTR CALLBACK About(HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam)
 
 int main()
 {
-	std::cout << "Output standard\n";
-	std::cerr << "Output error\n";
-
 	return wWinMain( GetModuleHandle( NULL ), NULL, GetCommandLineW(), SW_SHOWNORMAL );
 }

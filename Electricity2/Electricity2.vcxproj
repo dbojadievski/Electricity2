@@ -155,6 +155,7 @@
     <ClInclude Include="CoreSystem.h" />
     <ClInclude Include="CoreTimer.h" />
     <ClInclude Include="DisplaySettings.h" />
+    <ClInclude Include="Math.h" />
     <ClInclude Include="PlatformAppDefines.h" />
     <ClInclude Include="PlatformDisplaySettings.h" />
     <ClInclude Include="PlatformTime.h" />
@@ -187,6 +188,10 @@
     <ClInclude Include="UnitTests_MemoryHeap.h" />
     <ClInclude Include="UnitTests_StringUtils.h" />
     <ClInclude Include="UUID.h" />
+    <ClInclude Include="Vector.h" />
+    <ClInclude Include="Vector2.h" />
+    <ClInclude Include="Vector3.h" />
+    <ClInclude Include="Vector4.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="App.cpp" />
