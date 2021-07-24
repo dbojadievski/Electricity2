@@ -3,17 +3,17 @@ template <class DataType>
 class ListNode
 {
 public:
-	DataType m_Data;
+	DataType m_aData;
 
 	ListNode() noexcept
-		: m_Data( nullptr )
+		: m_aData( nullptr )
 		, m_pPrev( nullptr )
 		, m_pNext( nullptr ) 
 	{
 	}
 
 	ListNode( const DataType& InOriginal ) noexcept
-		: m_Data( InOriginal )
+		: m_aData( InOriginal )
 		, m_pPrev( nullptr )
 		, m_pNext( nullptr )
 	{
@@ -21,7 +21,7 @@ public:
 	}
 
 	ListNode( const ListNode<DataType>& InOriginal ) noexcept
-		: m_Data( InOriginal.m_Data )
+		: m_aData( InOriginal.m_aData )
 		, m_pPrev( InOriginal.m_pPrev )
 		, m_pNext( InOriginal.m_pNext )
 	{
@@ -29,18 +29,18 @@ public:
 	}
 
 	ListNode( ListNode<DataType>&& InOriginal ) noexcept
-		: m_Data( InOriginal.m_Data )
+		: m_aData( InOriginal.m_aData )
 		, m_pPrev( InOriginal.m_pPrev )
 		, m_pNext( InOriginal.m_pNext )
 	{
-		InOriginal.m_Data = { }; // Weird hack to initialize templates to default value. Works for built-ins, too.
+		InOriginal.m_aData = { }; // Weird hack to initialize templates to default value. Works for built-ins, too.
 		InOriginal.m_pPrev = nullptr;
 		InOriginal.m_pNext = nullptr;
 	}
 
 	ListNode<DataType>& operator=( const ListNode<DataType>& InOriginal ) noexcept
 	{
-		m_Data = InOriginal.m_Data;
+		m_aData = InOriginal.m_aData;
 
 		m_pPrev = InOriginal.m_pPrev;
 		m_pNext = InOriginal.m_pNext;
@@ -50,14 +50,14 @@ public:
 
 	bool operator== ( const ListNode<DataType>& InOther ) const noexcept
 	{
-		return ( m_Data == InOther.m_Data )
+		return ( m_aData == InOther.m_aData )
 			&& ( m_pPrev == InOther.m_pPrev )
 			&& ( m_pNext == InOther.m_pNext );
 	}
 
 	const DataType GetValue() noexcept
 	{
-		return m_Data;
+		return m_aData;
 	}
 
 	const bool IsHead() noexcept

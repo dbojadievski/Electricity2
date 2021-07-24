@@ -188,10 +188,6 @@
     <ClInclude Include="UnitTests_MemoryHeap.h" />
     <ClInclude Include="UnitTests_StringUtils.h" />
     <ClInclude Include="UUID.h" />
-    <ClInclude Include="Vector.h" />
-    <ClInclude Include="Vector2.h" />
-    <ClInclude Include="Vector3.h" />
-    <ClInclude Include="Vector4.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="App.cpp" />

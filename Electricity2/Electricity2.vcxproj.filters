@@ -100,9 +100,6 @@
     <Filter Include="Source Files\Math">
       <UniqueIdentifier>{29f239e9-118d-4ec0-95d8-3bc3ff20d0a8}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Header Files\Math\Vectors">
-      <UniqueIdentifier>{4c91d761-5607-4e7c-85b8-e996ccccd8a6}</UniqueIdentifier>
-    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="framework.h">
@@ -228,20 +225,8 @@
     <ClInclude Include="UnitTests_StringUtils.h">
       <Filter>Header Files\Testing</Filter>
     </ClInclude>
-    <ClInclude Include="Vector.h">
-      <Filter>Header Files\Math</Filter>
-    </ClInclude>
     <ClInclude Include="Math.h">
       <Filter>Header Files\Math</Filter>
-    </ClInclude>
-    <ClInclude Include="Vector2.h">
-      <Filter>Header Files\Math\Vectors</Filter>
-    </ClInclude>
-    <ClInclude Include="Vector3.h">
-      <Filter>Header Files\Math\Vectors</Filter>
-    </ClInclude>
-    <ClInclude Include="Vector4.h">
-      <Filter>Header Files\Math\Vectors</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
