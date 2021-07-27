@@ -39,7 +39,7 @@ HeapNode::GetBuffer() const noexcept
 uint32
 HeapNode::GetTotalSize() const noexcept
 {
-	return ( m_uSize + sizeof( this ) );
+	return ( m_uSize + sizeof( HeapNode ) );
 }
 
 HeapNode::HeapNode( byte* sBuffer, const uint32 uSize ) noexcept :
@@ -76,7 +76,7 @@ HeapNode* HeapManager::s_pFreeMemory;
 
 uint64 HeapManager::s_uTotalMemUsed;
 uint64 HeapManager::s_uTotalMemFree;
-uint64 HeapManager::s_uMemAlignmentSize;
+uint32 HeapManager::s_uMemAlignmentSize;
 
 map<byte*, HeapNode*> HeapManager::s_BufToNodeMap;
 bool
@@ -86,11 +86,11 @@ HeapManager::Initialize()
 
 	Platform::Memory::Initialize();
 
-	const uint32 HEAP_INIITAL_SIZE	= ( 64 * 1024 * 1024 ); // 64 MB.
+	s_uMemAlignmentSize				= Platform::Memory::GetMinAllocSize();
+	const uint32 HEAP_INIITAL_SIZE = ( 64 * 1024 * 1024 ); // 64 MB.
 	HeapNode* pInitialHeap			= ReservePage( HEAP_INIITAL_SIZE );
 
 	bInitialized					= ( pInitialHeap != nullptr );
-	s_uMemAlignmentSize				= Platform::Memory::GetMinAllocSize();
 	
 	return bInitialized;
 }
@@ -137,11 +137,59 @@ HeapManager::Allocate( const uint32 uSize,
 {
 	lock_guard<recursive_mutex> Lock( Mutex ); // Automatically releases mutex when out of scope.
 
-	// TODO(Dino): Merge/split heap nodes accordingly. Defragment.
-	HeapNode* pNode = HeapManager::FindFirstFit( uSize );
+	HeapNode* pNode = HeapManager::FindBestFit( uSize );
 	if ( !pNode )
 		pNode		= ReservePage( uSize, InitialContent );
-	
+	else if ( pNode->GetTotalSize() >= 2 * GetTotalSize( uSize ) )
+	{
+		uint32 uLine				= pNode->m_iLineNumber;
+		const char* pStrFile		= pNode->m_pStrFilePath;
+		HeapNode* pNext				= pNode->m_pNext;
+		
+		// Split node to the requested size, and keep the remainder.
+		const uint32 uExpectedSize = GetTotalSize( uSize );
+
+		byte* pBuffer				= reinterpret_cast<byte *>( pNode );
+		uint32 uBufSize				= pNode->GetTotalSize();
+		uint32 uStartSize			= pNode->m_uSize;
+		
+		HeapNode* pRequested		= ( HeapNode* ) pBuffer;
+#ifdef _DEBUG
+		pRequested->m_iLineNumber	= uLineNumber;
+		pRequested->m_pStrFilePath	= szFile;
+#endif
+		pRequested->m_uSize			= uSize;
+		pRequested->m_Buffer		= pBuffer + sizeof( HeapNode );
+		pNode						= pRequested;
+		
+		uint32 uReqNodeSize			= pRequested->GetTotalSize();
+		// Align the node to cache-friendly size.
+		pRequested->m_uSize			+= (uExpectedSize - uReqNodeSize);
+		uReqNodeSize				= pRequested->GetTotalSize();
+		assert( uReqNodeSize == uExpectedSize );
+
+		const uint32 uRemainingSize = ( uBufSize - uReqNodeSize );
+		byte * pRemainingBuffer		= ( pBuffer + uReqNodeSize );
+		HeapNode* pRemaining		= reinterpret_cast<HeapNode*>( pRemainingBuffer );
+#ifdef _DEBUG
+		pRemaining->m_iLineNumber	= uLine;
+		pRemaining->m_pStrFilePath	= pStrFile;
+#endif
+		pRemaining->m_pNext			= pNext;
+		pRemaining->m_uSize			= ( uRemainingSize - sizeof( HeapNode ) );
+		pRemaining->m_Buffer		= pRemainingBuffer + sizeof( HeapNode );
+		MarkFree( pRemaining );
+		uint32 uRemNodeSize			= pRemaining->GetTotalSize();
+
+		//Align the node to cache-friendly size.
+		const uint32 uAlignedSize	= GetAlignedSize( pRemaining->m_uSize );
+		pRemaining->m_uSize			+= ( uAlignedSize - pRemaining->m_uSize ); 
+		uRemNodeSize				= pRemaining->GetTotalSize();
+		
+		const uint32 uTotalSize		= ( uReqNodeSize + uRemNodeSize );
+		const uint32 uSizeDiff		= ( uBufSize - uTotalSize );
+		assert( uSizeDiff == 0 );
+	}
 	// Page reservation may fail, if:
 	// 1. The OS decides we've become chonky enough,
 	// 2. We've eaten all the actual virtual memory the OS is capable of handling,
@@ -299,7 +347,7 @@ HeapManager::ReservePage( const uint32 uSize, byte* InitialContent /* = nullptr 
 	// Reserve the actual memory.
 	const uint32 uHeaderedSize	= GetHeaderedSize( uSize );
 	const uint32 uAlignedSize	= GetAlignedSize( uHeaderedSize );
-	byte* pMemory				= reinterpret_cast<byte*>( Platform::Memory::InternalAlloc( uHeaderedSize ) );
+	byte* pMemory				= reinterpret_cast<byte*>( Platform::Memory::InternalAlloc( uHeaderedSize >= s_uMemAlignmentSize ? uHeaderedSize : s_uMemAlignmentSize ) );
 	if ( pMemory )
 	{
 		// Now use the memory to construct the node, consisting of both payload and metadata.

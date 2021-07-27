@@ -124,3 +124,9 @@ CoreThreadStart::SetWorkFunction( pThreadFunc pfnWorkFunction ) noexcept
 {
 	m_pfnThreadFunc = pfnWorkFunction;
 }
+
+void
+CoreThreadStart::SetCreateRunning( const bool bCreateRunning ) noexcept
+{
+	m_bScheduled = true;
+}

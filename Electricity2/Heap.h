@@ -83,7 +83,7 @@ private:
 	// Fast cached versions of commonly used data.
 	static uint64		s_uTotalMemUsed;
 	static uint64		s_uTotalMemFree;
-	static uint64		s_uMemAlignmentSize;
+	static uint32		s_uMemAlignmentSize;
 
 	static std::map<byte*, HeapNode*> s_BufToNodeMap;
 };
@@ -98,8 +98,12 @@ void Electricity_Free( void* pBuffer );
 
 #ifdef _DEBUG
 	#define gcnew(type) Electricity_Malloc(sizeof(type), __FILE__, __LINE__)
+	#define gcalloc(uSize) Electricity_Malloc(uSize, __FILE__, __LINE__)
+	#define gcfree(pBuf) Electricity_Free(pBuf, __FILE__, __LINE__)
 #else 
 	#define gcnew(type) Electricity_New(sizeof(type))
+	#define gcalloc(uSize) Electricity_Malloc(uSize)
+	#define gcfree(pBuf) Electricity_Free(pBuf)
 #endif
 
 #define gcdelete( pObj ) Electricity_Free( pObj );

@@ -22,5 +22,7 @@ typedef uint64_t uint64;
 typedef uint64 CORE_QWORD;
 
 typedef uint32 Handle;
+typedef uint32 CoreId;
 
 typedef std::string String;
+typedef std::string_view StringView;

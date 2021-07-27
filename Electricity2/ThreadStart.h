@@ -71,6 +71,7 @@ public:
 	void SetPriority( const CoreThreadPriority& Priority ) noexcept;
 	void SetAffinity( const CoreThreadProcessorAffinity& Affinity ) noexcept;
 	void SetStackSize( const uint16 uStackSize ) noexcept;
+	void SetCreateRunning( const bool bCreateRunning ) noexcept;
 
 	void SetWorkFunction( pThreadFunc pfnWorkFunction ) noexcept;
 

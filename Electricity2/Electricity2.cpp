@@ -13,6 +13,8 @@
 #include "UnitTests_CmdLineParser.h"
 #include "UnitTests_StringUtils.h"
 
+#include "HashUtils.h"
+
 #include "Thread.h"
 #include "ThreadStart.h"
 #include "Fiber.h"
@@ -23,8 +25,12 @@
 #include "CoreEngine.h"
 #include "ConsoleSystem.h"
 #include "SettingsSystem.h"
-
+#include "SerializationSystem.h"
+#include "SimpleMeshLoader.h"
 #include "Math.h"
+#include "TaskQueue.h"
+
+#include <fstream>
 
 #define MAX_LOADSTRING 100
 
@@ -35,6 +41,8 @@ InitializeSystems()
 {
     const bool bIsInitted = Manager.Initialize();
     assert( bIsInitted );
+
+    TaskQueue::Initialize();
 }
 
 void 
@@ -42,7 +50,8 @@ ShutDownSystems()
 {
     const bool bIsShutDown = Manager.ShutDown();
     assert( bIsShutDown );
-    assert(FreeConsole());
+
+    TaskQueue::Deinitialize();
 }
 
 uint32 __stdcall
@@ -140,11 +149,6 @@ RunThreadTest()
     std::cout << "Computed sum at: " << iSum << std::endl;
 }
 
-void
-NewTest()
-{
-}
-
 bool g_bVar = true;
 uint32 g_uVar = 1;
 float g_fVar = 1.0f;
@@ -207,6 +211,45 @@ ConsoleSystemTest() noexcept
     }
 }
 
+void
+LoadSampleSimpleMesh()
+{
+     TaskQueue::SubmitTask( [] ()
+         {
+             const string path = "triangle.mesh";
+             SerializationSystem::Deserialize( path );
+             const auto& meshes = SimpleMeshLoader::GetMeshes();
+             assert( meshes.size() == 1 );
+             const SharedPtr<SimpleMesh> pMesh = meshes[ 0 ];
+             const SimpleMesh& mesh = *pMesh.Get();
+
+             const String exportPath = "triangle_export.dat";
+             SerializationSystem::Serialize( mesh, exportPath );
+         });
+
+}
+
+
+void
+RunTaskQueueTest()
+{
+    TaskQueue::SubmitTask( [] () 
+    {
+            for ( uint32 idx = 1; idx <= 1000000; idx+= 2 ) 
+            {
+                std::cout << idx << std::endl;
+            }
+    } );
+
+	TaskQueue::SubmitTask( [] ()
+		{
+			for ( uint32 idx = 2; idx <= 1000000; idx += 2 )
+			{
+				std::cout << idx << std::endl;
+			}
+		} );
+}
+
 // Global Variables:
 HINSTANCE hInst;                                // current instance
 WCHAR szTitle[MAX_LOADSTRING];                  // The title bar text
@@ -230,12 +273,15 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
     InitializeSystems();
 
 #ifdef _DEBUG
-    UnitTestManager::GetInstance().RunAllUnitTests();
-    UnitTest_CmdLineParser ParserTest;
-    assert(ParserTest());
-    RunThreadTest();
-    RunFiberTest();
-    ConsoleSystemTest();
+
+    //UnitTestManager::GetInstance().RunAllUnitTests();
+    //UnitTest_CmdLineParser ParserTest;
+    //assert(ParserTest());
+    //RunThreadTest();
+    //RunFiberTest();
+    //ConsoleSystemTest();
+    LoadSampleSimpleMesh();
+    //RunTaskQueueTest();
 #endif
     
     // Can we do futures in our version of C++?

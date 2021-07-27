@@ -18,7 +18,6 @@ typedef DirectX::XMVECTOR FastVec;
 
 #define FASTVEC_SET DirectX::XMVectorSet
 
-
 typedef DirectX::XMMATRIX FASTMAT4;
 
 typedef DirectX::XMFLOAT3X3 MAT3;

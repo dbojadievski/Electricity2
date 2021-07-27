@@ -100,6 +100,21 @@
     <Filter Include="Source Files\Math">
       <UniqueIdentifier>{29f239e9-118d-4ec0-95d8-3bc3ff20d0a8}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Header Files\Rendering">
+      <UniqueIdentifier>{323a14b5-5053-4357-862b-fd74a5979eab}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Rendering">
+      <UniqueIdentifier>{c1be2ac6-efff-4072-b554-112b96dff4c3}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\AssetLoading">
+      <UniqueIdentifier>{a65a879a-515e-4f40-9e0c-d84534d393c8}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Core\Serialization">
+      <UniqueIdentifier>{73d6fc03-caa7-4ee5-b5a4-db4ecba1bd4d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Core\Serialization">
+      <UniqueIdentifier>{e290a590-adff-454b-8779-dbc17b7011ae}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="framework.h">
@@ -228,6 +243,30 @@
     <ClInclude Include="Math.h">
       <Filter>Header Files\Math</Filter>
     </ClInclude>
+    <ClInclude Include="ETextureChannels.h">
+      <Filter>Header Files\Rendering</Filter>
+    </ClInclude>
+    <ClInclude Include="Vertex.h">
+      <Filter>Header Files\Rendering</Filter>
+    </ClInclude>
+    <ClInclude Include="HashUtils.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="ChunkHeader.h">
+      <Filter>Header Files\Core\Serialization</Filter>
+    </ClInclude>
+    <ClInclude Include="SerializationSystem.h">
+      <Filter>Header Files\Core\Serialization</Filter>
+    </ClInclude>
+    <ClInclude Include="SimpleMeshLoader.h">
+      <Filter>Header Files\Core\Serialization</Filter>
+    </ClInclude>
+    <ClInclude Include="ISerializable.h">
+      <Filter>Header Files\Core\Serialization</Filter>
+    </ClInclude>
+    <ClInclude Include="TaskQueue.h">
+      <Filter>Header Files\Core\Multithreading</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Electricity2.cpp">
@@ -307,6 +346,24 @@
     </ClCompile>
     <ClCompile Include="StringUtils.cpp">
       <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Vertex.cpp">
+      <Filter>Source Files\Rendering</Filter>
+    </ClCompile>
+    <ClCompile Include="SimpleMeshLoader.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="HashUtils.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="SerializationSystem.cpp">
+      <Filter>Source Files\Core\Serialization</Filter>
+    </ClCompile>
+    <ClCompile Include="ChunkHeader.cpp">
+      <Filter>Source Files\Core\Serialization</Filter>
+    </ClCompile>
+    <ClCompile Include="TaskQueue.cpp">
+      <Filter>Source Files\Core\Multithreading</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
