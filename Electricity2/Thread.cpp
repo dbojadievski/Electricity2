@@ -248,6 +248,12 @@ CoreThread::Resume() noexcept
 
 // Static functions.
 uint32
+CoreThread::GetLogicalThreadCount() noexcept
+{
+	return PlatformThread::GetLogicalThreadCount();
+}
+
+uint32
 CoreThread::GetCurrentThreadID() noexcept
 {
 	return PlatformThread::GetCurrentThreadID();

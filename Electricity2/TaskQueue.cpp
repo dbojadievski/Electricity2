@@ -8,6 +8,8 @@ using std::recursive_mutex;
 
 static recursive_mutex g_Mutex;
 
+#include "SettingsSystem.h"
+
 uint32 __stdcall
 TaskQueue::WorkerThreadFunc( ThreadFuncParamPtr ptrParam ) noexcept
 {
@@ -31,10 +33,12 @@ void
 TaskQueue::Initialize() noexcept
 {
 	lock_guard<recursive_mutex> guard( g_Mutex );
+	s_uNumWorkers = CoreThread::GetLogicalThreadCount();
 	CoreThreadStart threadStart( &WorkerThreadFunc, true );
-	for ( uint32 uWorkerIdx = 0; uWorkerIdx < uNumWorkers; uWorkerIdx++ )
+	s_ppWorkers = new CoreThread*[ s_uNumWorkers ];
+	for ( uint32 uWorkerIdx = 0; uWorkerIdx < s_uNumWorkers; uWorkerIdx++ )
 	{
-		CoreThread* pThread = s_pWorkers[ uWorkerIdx ];
+		CoreThread* pThread = s_ppWorkers[ uWorkerIdx ];
 		pThread				= new CoreThread( threadStart );
 	}
 }
@@ -44,13 +48,15 @@ TaskQueue::Deinitialize() noexcept
 {
 	lock_guard<recursive_mutex> guard( g_Mutex );
 	s_bShutDown = true;
-	for ( uint32 uWorkerIdx = 0; uWorkerIdx < uNumWorkers; uWorkerIdx++ )
+	for ( uint32 uWorkerIdx = 0; uWorkerIdx < s_uNumWorkers; uWorkerIdx++ )
 	{
-		CoreThread* pThread = s_pWorkers[ uWorkerIdx ];
+		CoreThread* pThread = s_ppWorkers[ uWorkerIdx ];
 		pThread->Join();
 		delete pThread;
-		s_pWorkers[ uWorkerIdx ] = nullptr;
+		s_ppWorkers[ uWorkerIdx ] = nullptr;
 	}
+
+	delete[] s_ppWorkers;
 }
 
 void

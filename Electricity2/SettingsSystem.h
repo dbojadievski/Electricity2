@@ -19,6 +19,7 @@ public:
 
 	const DisplaySettings& GetDisplaySettings() const noexcept;
 	uint64 GetMemorySizeInMegabytes() const noexcept;
+	uint32 GetHardwareThreadCount() const noexcept;
 private:
 	uint64			m_uMemorySize;
 	DisplaySettings m_DisplaySettings;

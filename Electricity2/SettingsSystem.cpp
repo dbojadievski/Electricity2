@@ -3,6 +3,9 @@
 #include "App.h"
 #include "PlatformDisplaySettings.h"
 #include "PlatformMemory.h"
+
+#include <thread>
+
 // SettingsSystem implementation.
 
 bool
@@ -50,6 +53,12 @@ uint64
 SettingsSystem::GetMemorySizeInMegabytes() const noexcept
 {
 	return m_uMemorySize;
+}
+
+uint32
+SettingsSystem::GetHardwareThreadCount() const noexcept
+{
+	return std::thread::hardware_concurrency();
 }
 
 INIT_CLASS_BODY( SettingsSystem )

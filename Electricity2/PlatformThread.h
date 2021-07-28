@@ -22,5 +22,5 @@ namespace PlatformThread
 	bool Resume( PPlatformThread pThread ) noexcept;
 
 	uint32 GetStatusCode( PPlatformThread pThread ) noexcept;
-
+	uint32 GetLogicalThreadCount() noexcept;
 }

@@ -155,5 +155,14 @@ namespace PlatformThread
 		return static_cast<uint32>( dwExitCode );
 	}
 
+	uint32 
+	GetLogicalThreadCount() noexcept
+	{
+		SYSTEM_INFO sysinfo = {};
+		GetSystemInfo( &sysinfo );
+		const uint32 uNumThreads = static_cast< uint32 >( sysinfo.dwNumberOfProcessors );
+		return uNumThreads;
+	}
+
 }
 #endif

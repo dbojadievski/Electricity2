@@ -66,12 +66,16 @@ public:
 	/// </summary>
 	bool Resume() noexcept;
 
+	static uint32 GetLogicalThreadCount() noexcept;
+
 	static uint32 GetCurrentThreadID()  noexcept;
 	static CoreThread GetCurrentThread() noexcept;
+
 private:
 	CoreThreadStatus	m_Status;
 
 	PPlatformThread		m_pPlatformThread;
 	PlatformThreadID	m_PlatformThreadID;
 
+	static				uint32 s_uLogicalThreadCount;
 };
