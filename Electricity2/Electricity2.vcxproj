@@ -160,6 +160,7 @@
     <ClInclude Include="HashUtils.h" />
     <ClInclude Include="ISerializable.h" />
     <ClInclude Include="Math.h" />
+    <ClInclude Include="MemoryStreamBuf.h" />
     <ClInclude Include="PlatformAppDefines.h" />
     <ClInclude Include="PlatformDisplaySettings.h" />
     <ClInclude Include="PlatformTime.h" />

@@ -91,7 +91,6 @@ HeapManager::Initialize()
 	HeapNode* pInitialHeap			= ReservePage( HEAP_INIITAL_SIZE );
 
 	bInitialized					= ( pInitialHeap != nullptr );
-	
 	return bInitialized;
 }
 
@@ -99,7 +98,6 @@ bool
 HeapManager::ShutDown()
 {
 	bool bIsShutDown		= true;
-
 	s_uMemAlignmentSize		= 0;
 
 #ifdef _DEBUG

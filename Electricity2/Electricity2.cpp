@@ -36,6 +36,7 @@
 
 HeapManager Manager;
 App* pApp = nullptr;
+
 void 
 InitializeSystems()
 {
@@ -107,7 +108,7 @@ FiberToThreadFunc( ThreadFuncParamPtr pParam )
 {
     std::cout << "Running from fiber to thread func" << std::endl;
 
-    // How do we give the fiber functons access to the fibers themselves, so the fiber can switch?
+    // How do we give the fiber functions access to the fibers themselves, so the fiber can switch?
     CoreThread currThread = CoreThread::GetCurrentThread();
     pFiber1 = new CoreFiber( currThread );
     
@@ -273,7 +274,6 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
     InitializeSystems();
 
 #ifdef _DEBUG
-
     //UnitTestManager::GetInstance().RunAllUnitTests();
     //UnitTest_CmdLineParser ParserTest;
     //assert(ParserTest());

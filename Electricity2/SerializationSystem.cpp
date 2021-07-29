@@ -3,6 +3,8 @@
 #include "SimpleMeshLoader.h"
 #include "Heap.h"
 
+#include "MemoryStreamBuf.h"
+
 ChunkReaderRegistry
 SerializationSystem::s_ChunkReaderRegistry =
 {
@@ -39,12 +41,14 @@ SerializationSystem::ProcessChunkHeader( istream& stream, ChunkHeader& chunkHead
 {
 	stream >> chunkHeader;
 	assert( chunkHeader.m_uSize > 0 );
-	void* pBuffer = gcalloc( chunkHeader.m_uSize );
+	byte* pBuffer = static_cast<byte*>(gcalloc( chunkHeader.m_uSize ));
+	stream.read( reinterpret_cast<char*>(pBuffer), chunkHeader.m_uSize );
+	MemoryStream memStream(pBuffer, chunkHeader.m_uSize);
 
 	const auto& it = s_ChunkReaderRegistry.find( chunkHeader.m_uType );
 	if ( it != s_ChunkReaderRegistry.cend() )
 	{
 		ChunkReaderDelegate pfnProcessor = (it->second);
-		pfnProcessor( stream, chunkHeader );
+		pfnProcessor( memStream, chunkHeader );
 	}
 }

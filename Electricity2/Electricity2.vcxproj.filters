@@ -267,6 +267,9 @@
     <ClInclude Include="TaskQueue.h">
       <Filter>Header Files\Core\Multithreading</Filter>
     </ClInclude>
+    <ClInclude Include="MemoryStreamBuf.h">
+      <Filter>Header Files\Core\Memory</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Electricity2.cpp">

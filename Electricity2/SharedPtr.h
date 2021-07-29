@@ -156,7 +156,6 @@ public:
 		return m_puiRefCount->load();
 	}
 
-private:
 	void AddRef() noexcept
 	{
 		m_puiRefCount->fetch_add( 1 );
@@ -172,10 +171,10 @@ private:
 
 	void RemoveRef() noexcept
 	{
-		if ( IsValid() )
+		if ( IsValid()  )
 		{
-			m_puiRefCount->fetch_sub( 1 );
-			if ( !m_puiRefCount )
+			m_puiRefCount->fetch_sub(1);
+			if ( m_puiRefCount->load() == 0 )
 			{
 				delete m_pData;
 			}
