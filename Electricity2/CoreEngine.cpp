@@ -56,6 +56,7 @@ void
 CoreEngine::ShutDown() noexcept
 {
 	TaskQueue::Deinitialize();
+	m_pSettingsSystem->ShutDown();
 	DeleteObject( m_pSettingsSystem.Get() );
 
 	m_uPrevFrameTime = 0;

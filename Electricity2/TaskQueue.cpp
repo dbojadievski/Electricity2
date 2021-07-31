@@ -10,6 +10,14 @@ static recursive_mutex g_Mutex;
 
 #include "SettingsSystem.h"
 
+// Class PackagedTask
+PackagedTask::PackagedTask( TaskHandler pfnHandler, TaskParam pParam /* = nullptr */ ) : 
+	  m_pParam( pParam )
+	, m_pfnHandler( pfnHandler )
+{
+}
+
+// Class TaskQueue
 uint32 __stdcall
 TaskQueue::WorkerThreadFunc( ThreadFuncParamPtr ptrParam ) noexcept
 {
@@ -19,10 +27,10 @@ TaskQueue::WorkerThreadFunc( ThreadFuncParamPtr ptrParam ) noexcept
 		lock_guard<recursive_mutex> guard( g_Mutex );
 		if ( s_Tasks.size() )
 		{
-			Task& pfnTask = s_Tasks.front();
+			PackagedTask& task = s_Tasks.front();
 			s_Tasks.pop();
+			task.m_pfnHandler( task.m_pParam );
 		}
-
 	}
 
 	return true;
@@ -59,8 +67,8 @@ TaskQueue::Deinitialize() noexcept
 }
 
 void
-TaskQueue::SubmitTask( Task pfnTask ) noexcept
+TaskQueue::SubmitTask( PackagedTask& task ) noexcept
 {
 	lock_guard<recursive_mutex> guard( g_Mutex );
-	s_Tasks.push( pfnTask );
+	s_Tasks.push( task );
 }

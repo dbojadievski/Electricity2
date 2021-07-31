@@ -201,10 +201,10 @@ ConsoleSystemTest() noexcept
     }
 
     {
-        const bool bAddedCommand = ConsoleSystem::AddCommand( "Console.PrintHello", &HelloConsole );
+        const bool bAddedCommand    = ConsoleSystem::AddCommand( "Console.PrintHello", &HelloConsole );
         assert( bAddedCommand );
         
-        const bool bParsedCmd = ConsoleSystem::FeedLine( "Console.PrintHello" );
+        const bool bParsedCmd       = ConsoleSystem::FeedLine( "Console.PrintHello" );
         assert( bParsedCmd );
 
         const bool bParsedModifyCmd = ConsoleSystem::FeedLine( "boolVar 1" );
@@ -215,47 +215,25 @@ ConsoleSystemTest() noexcept
 void
 LoadSampleSimpleMesh()
 {
-     TaskQueue::SubmitTask( [] ()
-         {
-             const string path = "triangle.mesh";
-             SerializationSystem::Deserialize( path );
-             const auto& meshes = SimpleMeshLoader::GetMeshes();
-             assert( meshes.size() == 1 );
-             const SharedPtr<SimpleMesh> pMesh = meshes[ 0 ];
-             const SimpleMesh& mesh = *pMesh.Get();
-
-             const String exportPath = "triangle_export.dat";
-             SerializationSystem::Serialize( mesh, exportPath );
-
-             SerializationSystem::Deserialize( "quad.mesh" );
-             assert( meshes.size() == 2 );
-             const SharedPtr<SimpleMesh> pMeshQuad = meshes[ 1 ];
-             const String exportPathQuad = "quad_export.dat";
-             const SimpleMesh& quadMesh = *pMeshQuad.Get();
-             SerializationSystem::Serialize( quadMesh, exportPathQuad );
-         });
-
-}
-
-
-void
-RunTaskQueueTest()
-{
-    TaskQueue::SubmitTask( [] () 
+    PackagedTask taskMesh( ([] ( TaskParam pParam ) 
     {
-            for ( uint32 idx = 1; idx <= 1000000; idx+= 2 ) 
-            {
-                std::cout << idx << std::endl;
-            }
-    } );
+		SerializationSystem::Deserialize( "triangle.mesh" );
+		const auto& meshes      = SimpleMeshLoader::GetMeshes();
+		assert( meshes.size() == 1 );
+		const SharedPtr<SimpleMesh> pMesh = meshes[ 0 ];
+		const SimpleMesh& mesh  = *pMesh.Get();
 
-	TaskQueue::SubmitTask( [] ()
-		{
-			for ( uint32 idx = 2; idx <= 1000000; idx += 2 )
-			{
-				std::cout << idx << std::endl;
-			}
-		} );
+		const String exportPath = "triangle_export.dat";
+		SerializationSystem::Serialize( mesh, exportPath );
+
+		SerializationSystem::Deserialize( "quad.mesh" );
+		assert( meshes.size() == 2 );
+		const SharedPtr<SimpleMesh> pMeshQuad = meshes[ 1 ];
+		const String exportPathQuad     = "quad_export.dat";
+		const SimpleMesh& quadMesh      = *pMeshQuad.Get();
+		SerializationSystem::Serialize( quadMesh, exportPathQuad );
+    }) );
+    TaskQueue::SubmitTask( taskMesh );
 }
 
 // Global Variables:
@@ -298,7 +276,6 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
     //RunFiberTest();
     //ConsoleSystemTest();
     LoadSampleSimpleMesh();
-    //RunTaskQueueTest();
 #endif
     
     // Can we do futures in our version of C++?

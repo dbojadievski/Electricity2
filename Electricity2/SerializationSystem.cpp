@@ -5,6 +5,8 @@
 #include "SimpleMeshLoader.h"
 #include "TaskQueue.h"
 
+#include <future>
+
 ChunkReaderRegistry
 SerializationSystem::s_ChunkReaderRegistry =
 {
