@@ -3,6 +3,7 @@
 #include <assert.h>
 #include "CoreTimer.h"
 #include "Heap.h"
+#include "TaskQueue.h"
 
 CoreEngine::CoreEngine() noexcept :
 	m_uPrevFrameTime( 0 )
@@ -47,11 +48,14 @@ CoreEngine::Initialize() noexcept
 	const auto ID = CoreSystem::GetClassId();
 	const bool bIsCoreSystem	= m_pSettingsSystem->IsA<CoreSystem>();
 	assert( bIsCoreSystem );
+
+	TaskQueue::Initialize();
 }
 
 void
 CoreEngine::ShutDown() noexcept
 {
+	TaskQueue::Deinitialize();
 	DeleteObject( m_pSettingsSystem.Get() );
 
 	m_uPrevFrameTime = 0;

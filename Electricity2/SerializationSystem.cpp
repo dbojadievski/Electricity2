@@ -1,9 +1,9 @@
 #include "SerializationSystem.h"
 
-#include "SimpleMeshLoader.h"
 #include "Heap.h"
-
 #include "MemoryStreamBuf.h"
+#include "SimpleMeshLoader.h"
+#include "TaskQueue.h"
 
 ChunkReaderRegistry
 SerializationSystem::s_ChunkReaderRegistry =
@@ -30,8 +30,11 @@ SerializationSystem::Deserialize( const String& filePath ) noexcept
 	ifstream stream( filePath );
 	if ( stream )
 	{
-		ChunkHeader header = {};
-		ProcessChunkHeader( stream, header );
+		while ( !stream.eof() )
+		{
+			ChunkHeader header = {};
+			ProcessChunkHeader( stream, header );
+		}
 	}
 	else assert( false );
 }

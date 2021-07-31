@@ -31,7 +31,7 @@ private:
 
 	byte*		m_Buffer;
 
-#ifdef _DEBUG
+#ifdef USE_MEMORY_TRACKING
 	const char*	m_pStrFilePath;
 	int32		m_iLineNumber;
 #endif
@@ -41,7 +41,7 @@ class HeapManager
 {
 public:
 	friend void* Electricity_Malloc( size_t cbSize
-#ifdef _DEBUG
+#ifdef USE_MEMORY_TRACKING
 		, const char* szFile
 		, size_t nLineNo
 #endif
@@ -53,14 +53,14 @@ public:
 
 	static bool HasAvailable( uint32 uSize ) noexcept;
 	static HeapNode* Allocate( const uint32 uSize
-#ifdef _DEBUG
+#ifdef USE_MEMORY_TRACKING
 		, const char* szFile, size_t uLineNumber
 #endif
 		, byte* InitialContent = nullptr
 	) noexcept;
 	static void Release( HeapNode& Node ) noexcept;
 
-#ifdef _DEBUG
+#ifdef USE_MEMORY_TRACKING
 	static void CheckForMemoryLeak();
 #endif
 private:
@@ -68,57 +68,55 @@ private:
 	static HeapNode* FindBestFit( const uint32 uSize ) noexcept;
 	
 	static void MarkFree( HeapNode* pNode ) noexcept;
-	static void MarkUsed( HeapNode* pNode
-#ifdef _DEBUG
-		, const char* szFile, size_t uLineNumber
-#endif
-	) noexcept;
+	static void MarkUsed( HeapNode* pNode ) noexcept;
 
 	static HeapNode * ReservePage( const uint32 uSize, byte* InitialContent = nullptr );
 	static HeapNode * ReleasePage( HeapNode& Node );
+
+	static void RemoveFromList( HeapNode* pNode, HeapNode** ppList ) noexcept;
+	static void PushToFrontOfList( HeapNode* pNode, HeapNode** ppList ) noexcept;
+	static HeapNode* FindInList( HeapNode* pNode, HeapNode* pList ) noexcept;
+	static void Untrack( HeapNode* pNode ) noexcept;
 
 	static HeapNode*	s_pUsedMemory;
 	static HeapNode*	s_pFreeMemory;
 
 	// Fast cached versions of commonly used data.
-	static uint64		s_uTotalMemUsed;
-	static uint64		s_uTotalMemFree;
 	static uint32		s_uMemAlignmentSize;
 
 	static std::map<byte*, HeapNode*> s_BufToNodeMap;
 };
 
 void* Electricity_Malloc( size_t cbSize
-#ifdef _DEBUG
+#ifdef USE_MEMORY_TRACKING
 	, const char* szFile, size_t nLineNo 
 #endif
 );
 
 void Electricity_Free( void* pBuffer );
 
-#ifdef _DEBUG
+#ifdef USE_MEMORY_TRACKING
 	#define gcnew(type) Electricity_Malloc(sizeof(type), __FILE__, __LINE__)
 	#define gcalloc(uSize) Electricity_Malloc(uSize, __FILE__, __LINE__)
-	#define gcfree(pBuf) Electricity_Free(pBuf, __FILE__, __LINE__)
 #else 
 	#define gcnew(type) Electricity_New(sizeof(type))
 	#define gcalloc(uSize) Electricity_Malloc(uSize)
-	#define gcfree(pBuf) Electricity_Free(pBuf)
 #endif
 
+#define gcfree(pBuf) Electricity_Free(pBuf)
 #define gcdelete( pObj ) Electricity_Free( pObj );
 
 template <class Type>
 SharedPtr<Type> __GCNew__
 (
-#ifdef _DEBUG
+#ifdef USE_MEMORY_TRACKING
 	const char* szFile
 	, size_t uLineNumber
 #endif
 )
 {
 	void* pBuffer = new Type(
-#ifdef _DEBUG
+#ifdef USE_MEMORY_TRACKING
 		szFile
 		, uLineNumber
 #endif
@@ -130,7 +128,7 @@ SharedPtr<Type> __GCNew__
 	SharedPtr<Type> asShared( pType );
 	return asShared;
 }
-#ifdef _DEBUG
+#ifdef USE_MEMORY_TRACKING
 #define CreateObject(Type) __GCNew__<Type>(__FILE__, __LINE__)
 #else
 #define CreateObject(Type) __GCNew__<Type>()
@@ -147,7 +145,7 @@ void __GCDelete__( Type* self)
 #define DeleteObject(object) __GCDelete__(object)
 
 // Function signatures typedef-ed for easy befriending where needed.
-#ifdef _DEBUG
+#ifdef USE_MEMORY_TRACKING
 #define __ALLOC__ void* Electricity_Malloc( const size_t cbSize, const char* szFile, size_t nLineNo)
 #else
 #define __ALLOC__ void* Electricity_Malloc( const size_t cbSize)

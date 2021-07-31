@@ -8,7 +8,7 @@ public: \
 	class Initializer; \
 	static ClassID GetClassId() noexcept { return s_ClassId; } // Can't be virtual to properly populate inheritance chain.
 
-#ifdef _DEBUG
+#ifdef USE_MEMORY_TRACKING
 	#define __DECL_OBJ_CONSTRUCTOR_PARAMS__ const char* szFile, size_t nLineNo
 	#define __DECL_ALLOC_TEMPLATE_PARAMS__ const char*, size_t
 
@@ -42,7 +42,7 @@ public: \
 	#define __DECL_CONSTRUCTOR_PARAMS_CALL__ __FILE__, __LINE__ \
 	#define __DECL_CONSTRUCTORS__(ClassType) \
 	ClassType() noexcept __DECL_CONSTRUCTOR_BODY__(ClassType)
-#endif // _DEBUG
+#endif // USE_MEMORY_TRACKING
 
 #define INIT_CLASS(ClassType) \
 INIT_CORE_OBJECT \

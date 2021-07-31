@@ -8,6 +8,7 @@ using std::lock_guard;
 using std::recursive_mutex;
 using std::map;
 
+//#define DEBUG_MEM_HEAP
 // Heap node implementation.
 
 recursive_mutex Mutex;
@@ -46,7 +47,7 @@ HeapNode::HeapNode( byte* sBuffer, const uint32 uSize ) noexcept :
 	m_uSize( uSize )
 	, m_Buffer( sBuffer ) 
 	, m_pNext( nullptr )
-#ifdef _DEBUG
+#ifdef USE_MEMORY_TRACKING
 	, m_pStrFilePath( nullptr )
 	, m_iLineNumber( 0 )
 #endif
@@ -74,8 +75,6 @@ HeapNode::~HeapNode()
 HeapNode* HeapManager::s_pUsedMemory;
 HeapNode* HeapManager::s_pFreeMemory;
 
-uint64 HeapManager::s_uTotalMemUsed;
-uint64 HeapManager::s_uTotalMemFree;
 uint32 HeapManager::s_uMemAlignmentSize;
 
 map<byte*, HeapNode*> HeapManager::s_BufToNodeMap;
@@ -87,10 +86,16 @@ HeapManager::Initialize()
 	Platform::Memory::Initialize();
 
 	s_uMemAlignmentSize				= Platform::Memory::GetMinAllocSize();
-	const uint32 HEAP_INIITAL_SIZE = ( 64 * 1024 * 1024 ); // 64 MB.
-	HeapNode* pInitialHeap			= ReservePage( HEAP_INIITAL_SIZE );
+	const uint32 HEAP_INIITAL_SIZE	= ( 64 * 1024 * 1024 ); // 64 MB.
+	HeapNode* pInitialHeap			= Allocate( HEAP_INIITAL_SIZE 
+#ifdef USE_MEMORY_TRACKING
+		, __FILE__
+		, __LINE__
+#endif
+	);
 
-	bInitialized					= ( pInitialHeap != nullptr );
+	Release( *pInitialHeap );
+	bInitialized = ( pInitialHeap != nullptr );
 	return bInitialized;
 }
 
@@ -100,7 +105,7 @@ HeapManager::ShutDown()
 	bool bIsShutDown		= true;
 	s_uMemAlignmentSize		= 0;
 
-#ifdef _DEBUG
+#ifdef USE_MEMORY_TRACKING
 	CheckForMemoryLeak();
 #else
 	bIsShutDown				= true;
@@ -127,7 +132,7 @@ HeapManager::HasAvailable( uint32 uSize ) noexcept
 
 HeapNode*
 HeapManager::Allocate( const uint32 uSize, 
-#ifdef _DEBUG
+#ifdef USE_MEMORY_TRACKING
 	const char* szFile, size_t uLineNumber,
 	#endif
 	byte* InitialContent /* = nullptr */ 
@@ -140,10 +145,13 @@ HeapManager::Allocate( const uint32 uSize,
 		pNode		= ReservePage( uSize, InitialContent );
 	else if ( pNode->GetTotalSize() >= 2 * GetTotalSize( uSize ) )
 	{
+#ifdef USE_MEMORY_TRACKING
 		uint32 uLine				= pNode->m_iLineNumber;
 		const char* pStrFile		= pNode->m_pStrFilePath;
+#endif
 		HeapNode* pNext				= pNode->m_pNext;
-		
+		Untrack( pNode );
+
 		// Split node to the requested size, and keep the remainder.
 		const uint32 uExpectedSize = GetTotalSize( uSize );
 
@@ -152,7 +160,7 @@ HeapManager::Allocate( const uint32 uSize,
 		uint32 uStartSize			= pNode->m_uSize;
 		
 		HeapNode* pRequested		= ( HeapNode* ) pBuffer;
-#ifdef _DEBUG
+#ifdef USE_MEMORY_TRACKING
 		pRequested->m_iLineNumber	= uLineNumber;
 		pRequested->m_pStrFilePath	= szFile;
 #endif
@@ -169,7 +177,7 @@ HeapManager::Allocate( const uint32 uSize,
 		const uint32 uRemainingSize = ( uBufSize - uReqNodeSize );
 		byte * pRemainingBuffer		= ( pBuffer + uReqNodeSize );
 		HeapNode* pRemaining		= reinterpret_cast<HeapNode*>( pRemainingBuffer );
-#ifdef _DEBUG
+#ifdef USE_MEMORY_TRACKING
 		pRemaining->m_iLineNumber	= uLine;
 		pRemaining->m_pStrFilePath	= pStrFile;
 #endif
@@ -196,12 +204,11 @@ HeapManager::Allocate( const uint32 uSize,
 	assert( pNode );
 	if ( pNode )
 	{
-		MarkUsed( 
-			pNode 
-#ifdef _DEBUG
-			, szFile, uLineNumber
+#ifdef USE_MEMORY_TRACKING
+		pNode->m_pStrFilePath	= szFile;
+		pNode->m_iLineNumber	= uLineNumber;
 #endif
-		);
+		MarkUsed( pNode  );
 	}
 
 	return pNode;
@@ -232,16 +239,6 @@ HeapManager::FindFirstFit( const uint32 uSize ) noexcept
 
 		pPrevNode = pCurrNode;
 		pCurrNode = pCurrNode->m_pNext;
-	}
-
-	// If we did find some memory, remove it from the free mem list.
-	if ( pCurrNode )
-	{
-		if ( pPrevNode )
-			pPrevNode->m_pNext = pCurrNode->m_pNext;
-		else
-			s_pFreeMemory = nullptr;
-
 	}
 
 	assert( !pFirstFit || pFirstFit->m_Buffer );
@@ -289,52 +286,109 @@ HeapManager::FindBestFit( const uint32 uSize ) noexcept
 		pPrevNode	= pCurrNode;
 		pCurrNode	= pCurrNode->m_pNext;
 	}
-
-	// If we did find some memory, remove it from the free mem list.
-	if ( pCurrNode )
-	{
-		if ( pPrevNode )
-			pPrevNode->m_pNext = pCurrNode->m_pNext;
-		else
-			s_pFreeMemory = nullptr;
-	}
 	
 	assert( !pBestFit || pBestFit->m_Buffer );
 	return pBestFit;
 }
 
 void
-HeapManager::MarkFree( HeapNode* pNode ) noexcept
+HeapManager::RemoveFromList( HeapNode* pNode, HeapNode** ppList ) noexcept
 {
-	if ( s_pFreeMemory )
-		s_pFreeMemory->m_pNext	= pNode;
-	else
-		s_pFreeMemory			= pNode;
+	assert( pNode );
+	assert( ppList );
+	
+	if ( !*ppList )
+		return;
 
-	s_uTotalMemFree				+= pNode->m_uSize;
-	s_uTotalMemUsed				-= pNode->m_uSize;
+	if ( *ppList == pNode )
+	{
+		*ppList = pNode->m_pNext;
+		return;
+	}
+
+	HeapNode* pPrev		= nullptr;
+	HeapNode* pCurr		= *ppList;
+
+	while ( pCurr != pNode && pCurr->m_pNext != nullptr )
+	{
+		pPrev			= pCurr;
+		pCurr			= pCurr->m_pNext;
+	}
+
+	if ( pCurr == pNode )
+		pPrev->m_pNext = pCurr->m_pNext;
 }
 
 void
-HeapManager::MarkUsed( HeapNode* pNode
-#ifdef _DEBUG
-	, const char* szFile, size_t uLineNumber
-#endif
-) noexcept
+HeapManager::PushToFrontOfList( HeapNode* pNode, HeapNode** ppList ) noexcept
 {
-#ifdef _DEBUG
-	pNode->m_pStrFilePath		= szFile;
-	pNode->m_iLineNumber		= uLineNumber;
-#endif
+	assert( pNode );
+	assert( ppList );
 
-	if ( s_pUsedMemory )
-		s_pUsedMemory->m_pNext	= pNode;
+	if ( !*ppList )
+		*ppList = pNode;
 	else
-		s_pUsedMemory			= pNode;
-	pNode->m_pNext				= nullptr; // This is now our last used node.
+	{
+		pNode->m_pNext = *ppList;
+		*ppList = pNode;
+	}
+}
 
-	s_uTotalMemUsed				+= pNode->m_uSize;
-	s_uTotalMemFree				-= pNode->m_uSize;
+HeapNode*
+HeapManager::FindInList( HeapNode* pNode, HeapNode* pList ) noexcept
+{
+	assert( pNode );
+
+	if ( !pNode )
+		return nullptr;
+
+	while ( pList )
+	{
+		if ( pList == pNode )
+			return pNode;
+
+		pList = pList->m_pNext;
+	}
+
+	return nullptr;
+}
+
+void
+HeapManager::MarkFree( HeapNode* pNode ) noexcept
+{
+	RemoveFromList( pNode, &s_pUsedMemory );
+	PushToFrontOfList( pNode, &s_pFreeMemory );
+
+#ifdef DEBUG_MEM_HEAP
+	assert( !FindInList( pNode, s_pUsedMemory ) );
+	assert( FindInList( pNode, s_pFreeMemory ) );
+#endif
+}
+
+void
+HeapManager::MarkUsed( HeapNode* pNode ) noexcept
+{
+	RemoveFromList( pNode, &s_pFreeMemory );
+	PushToFrontOfList( pNode, &s_pUsedMemory );
+
+#ifdef DEBUG_MEM_HEAP
+	assert( FindInList( pNode, s_pUsedMemory ) );
+	assert( !FindInList( pNode, s_pFreeMemory ) );
+#endif
+}
+
+void
+HeapManager::Untrack( HeapNode* pNode ) noexcept
+{
+	RemoveFromList( pNode, &s_pFreeMemory );
+	RemoveFromList( pNode, &s_pUsedMemory );
+
+	pNode->m_pNext = nullptr;
+
+#ifdef DEBUG_MEM_HEAP
+	assert( !FindInList( pNode, s_pUsedMemory ) );
+	assert( !FindInList( pNode, s_pFreeMemory ) );
+#endif
 }
 
 HeapNode* 
@@ -361,8 +415,6 @@ HeapManager::ReservePage( const uint32 uSize, byte* InitialContent /* = nullptr 
 			// And pray we don't explode into a cloud of security vulnerabilities.
 			Platform::Memory::Copy( InitialContent, pData, uSize );
 		}
-
-		MarkFree( pPageNode );
 	}
 
 	return pPageNode;
@@ -387,7 +439,7 @@ HeapManager::ReleasePage( HeapNode& Node )
 	return pNext;
 }
 
-#ifdef _DEBUG
+#ifdef USE_MEMORY_TRACKING
 void
 HeapManager::CheckForMemoryLeak()
 {
@@ -409,7 +461,7 @@ HeapManager::CheckForMemoryLeak()
 
 void* 
 Electricity_Malloc( const size_t cbSize 
-	#ifdef _DEBUG
+	#ifdef USE_MEMORY_TRACKING
 	,const char* szFile
 	, size_t nLineNo
 	#endif
@@ -417,7 +469,7 @@ Electricity_Malloc( const size_t cbSize
 )
 {
 	HeapNode *pNode = HeapManager::Allocate( cbSize
-#ifdef _DEBUG
+#ifdef USE_MEMORY_TRACKING
 		, szFile, nLineNo
 #endif
 	);
@@ -445,13 +497,14 @@ Electricity_Free( void* pBuffer )
 		{
 			HeapNode* pNode		= pair->second;
 			pNode->Release();
+			HeapManager::s_BufToNodeMap.erase( pair );
 		}
 	}
 }
 
 void*
 operator new( size_t n
-#ifdef _DEBUG
+#ifdef USE_MEMORY_TRACKING
 	, const char* szFile
 	, size_t nLineNo
 #endif
@@ -459,7 +512,7 @@ operator new( size_t n
 {
 
 	return Electricity_Malloc( n
-#ifdef _DEBUG
+#ifdef USE_MEMORY_TRACKING
 		, szFile
 		, nLineNo
 #endif
@@ -468,14 +521,14 @@ operator new( size_t n
 
 void*
 operator new[]( size_t n
-#ifdef _DEBUG
+#ifdef USE_MEMORY_TRACKING
 	, const char* szFile
 	, size_t nLineNo
 #endif
 	)
 {
 	return Electricity_Malloc( n
-#ifdef _DEBUG
+#ifdef USE_MEMORY_TRACKING
 		, szFile
 		, nLineNo
 #endif

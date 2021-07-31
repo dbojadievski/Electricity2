@@ -21,7 +21,6 @@ TaskQueue::WorkerThreadFunc( ThreadFuncParamPtr ptrParam ) noexcept
 		{
 			Task& pfnTask = s_Tasks.front();
 			s_Tasks.pop();
-			pfnTask();
 		}
 
 	}

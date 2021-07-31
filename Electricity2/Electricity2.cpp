@@ -226,6 +226,13 @@ LoadSampleSimpleMesh()
 
              const String exportPath = "triangle_export.dat";
              SerializationSystem::Serialize( mesh, exportPath );
+
+             SerializationSystem::Deserialize( "quad.mesh" );
+             assert( meshes.size() == 2 );
+             const SharedPtr<SimpleMesh> pMeshQuad = meshes[ 1 ];
+             const String exportPathQuad = "quad_export.dat";
+             const SimpleMesh& quadMesh = *pMeshQuad.Get();
+             SerializationSystem::Serialize( quadMesh, exportPathQuad );
          });
 
 }
@@ -274,6 +281,16 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
     InitializeSystems();
 
 #ifdef _DEBUG
+    {
+        // Heap tests.
+        auto p = gcalloc( 10 );
+        auto q = gcalloc( 20 );
+        gcfree( p );
+        auto r = gcalloc( 10 );
+        gcfree( q );
+        gcfree( r );
+    }
+
     //UnitTestManager::GetInstance().RunAllUnitTests();
     //UnitTest_CmdLineParser ParserTest;
     //assert(ParserTest());

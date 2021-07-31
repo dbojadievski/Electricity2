@@ -10,7 +10,7 @@ typedef void ( *Task )( );
 class TaskQueue
 {
 public:
-	static void SubmitTask( Task pfnTask ) noexcept;
+	static void SubmitTask( Task pfnTask) noexcept;
 
 	static void Initialize() noexcept;
 	static void Deinitialize() noexcept;

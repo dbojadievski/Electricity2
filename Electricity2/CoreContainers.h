@@ -13,7 +13,11 @@ using Allocator = std::allocator<Type>;
 template <class Type>
 using Array = std::vector<Type, Allocator<Type>>;
 
-#define Map std::map
+template <class Key, class Value>
+using Map = std::map<Key, Value, Allocator>;
+
+template <class Key, class Value>
+using MakePair = std::make_pair;
 
 template <class Type>
 using Set = std::set<Type, Allocator<Type>>;
