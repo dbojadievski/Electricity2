@@ -29,8 +29,8 @@ enum class TaskState: byte
 class PackagedTask
 {
 public:
-	PackagedTask( TaskHandler pfnHandler, TaskParam pParam = nullptr ) noexcept;
-
+	static PackagedTask * Create( TaskHandler pfnHandler, TaskParam pParam = nullptr ) noexcept;
+	bool IsValid() const noexcept;
 	bool IsScheduled() const noexcept;
 	bool IsRunning() const noexcept;
 	bool IsCancelled() const noexcept;
@@ -46,10 +46,11 @@ public:
 	void SetOnCompleteHandler( TaskOnCompleteHandler pfnOnComplete ) noexcept;
 	void SetOnCancelledHandler( TaskOnCancelledHandler pfnOnCancelled ) noexcept;
 	void SetOnCompleteOrCancelledHandler( TaskOnCompleteOrCancelledHandler pfnHandler ) noexcept;
-	~PackagedTask() noexcept;
 	friend class TaskQueue;
 
 private:
+	PackagedTask( TaskHandler pfnHandler, TaskParam pParam = nullptr ) noexcept;
+	~PackagedTask() noexcept;
 	TaskState							m_TaskState;
 	bool								m_bShouldCancel;
 
@@ -74,6 +75,7 @@ public:
 	
 	static inline uint32				s_uNumWorkers;
 private:
+	static inline Array<PackagedTask*>	s_UnsubmittedTasks;
 	static inline Queue<PackagedTask*>	s_Tasks;
 	static inline CoreThread**			s_ppWorkers;
 

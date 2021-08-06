@@ -2,10 +2,11 @@
 
 #include "CoreTypes.h"
 
+#include <list>
 #include <map>
+#include <queue>
 #include <set>
 #include <vector>
-#include <queue>
 
 template <class Type>
 using Allocator = std::allocator<Type>;
@@ -26,3 +27,6 @@ using StringArray = Array<String>;
 
 template <class Type>
 using Queue = std::queue<Type>;
+
+template <class Type>
+using List = std::list<Type>;

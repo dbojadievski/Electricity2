@@ -11,6 +11,18 @@ static recursive_mutex g_Mutex;
 #include "SettingsSystem.h"
 
 // Class PackagedTask
+
+PackagedTask * 
+PackagedTask::Create( TaskHandler pfnHandler, TaskParam pParam /*= nullptr */ ) noexcept
+{
+	PackagedTask* pPackagedTask = new PackagedTask( pfnHandler, pParam );
+	
+	unique_lock<recursive_mutex> guard( g_Mutex );
+	TaskQueue::s_UnsubmittedTasks.push_back( pPackagedTask );
+	
+	return pPackagedTask;
+}
+
 PackagedTask::PackagedTask( TaskHandler pfnHandler, TaskParam pParam /* = nullptr */ ) noexcept :
 	  m_TaskState( TaskState::Invalid )
 	, m_bShouldCancel( false )
@@ -23,6 +35,12 @@ PackagedTask::PackagedTask( TaskHandler pfnHandler, TaskParam pParam /* = nullpt
 	, m_pfnOnCancelledHandler( nullptr )
 	, m_pfnOnCompleteOrCancelledHandler( nullptr )
 {
+}
+
+bool
+PackagedTask::IsValid() const noexcept
+{
+	return ( m_pfnHandler );
 }
 
 bool
@@ -65,9 +83,7 @@ PackagedTask::Cancel() noexcept
 void
 PackagedTask::Await() noexcept
 {
-	while ( m_TaskState == TaskState::Scheduled || m_TaskState == TaskState::Running || m_TaskState == TaskState::Invalid ) 
-	{
-	}
+	while ( m_TaskState != TaskState::Completed && m_TaskState != TaskState::Cancelled );
 }
 
 bool
@@ -102,6 +118,12 @@ void
 PackagedTask::SetOnCancelledHandler( TaskOnCancelledHandler pfnOnCancelled ) noexcept
 {
 	m_pfnOnCancelledHandler = pfnOnCancelled;
+}
+
+void
+PackagedTask::SetOnCompleteOrCancelledHandler( TaskOnCompleteOrCancelledHandler pfnHandler ) noexcept
+{
+	m_pfnOnCompleteOrCancelledHandler = pfnHandler;
 }
 
 PackagedTask::~PackagedTask() noexcept
@@ -152,6 +174,7 @@ TaskQueue::WorkerThreadFunc( ThreadFuncParamPtr ptrParam ) noexcept
 				if ( pTask->m_pfnOnCompleteHandler )
 					pTask->m_pfnOnCompleteHandler();
 				
+				delete pTask;
 				if ( pFollowUp )
 					pFollowUp->Submit();
 			}
@@ -190,17 +213,27 @@ TaskQueue::Deinitialize() noexcept
 		s_ppWorkers[ uWorkerIdx ] = nullptr;
 	}
 
+	for ( PackagedTask* pPackagedTask : s_UnsubmittedTasks )
+	{
+		delete pPackagedTask;
+	}
+
 	delete[] s_ppWorkers;
 }
 
 void
 TaskQueue::SubmitTask( PackagedTask* pTask ) noexcept
 {
-	pTask->m_TaskState = TaskState::Scheduled;
-	
-	if ( pTask->m_pfnOnSubmitHandler )
-		pTask->m_pfnOnSubmitHandler();
-
 	unique_lock<recursive_mutex> guard( g_Mutex );
-	s_Tasks.push( pTask );
+	const auto& it = std::find( s_UnsubmittedTasks.begin(), s_UnsubmittedTasks.end(), pTask );
+	if ( it != s_UnsubmittedTasks.end() && pTask->m_TaskState == TaskState::Invalid )
+	{
+		pTask->m_TaskState = TaskState::Scheduled;
+
+		if ( pTask->m_pfnOnSubmitHandler )
+			pTask->m_pfnOnSubmitHandler();
+
+		s_UnsubmittedTasks.erase( it );
+		s_Tasks.push( pTask );
+	}
 }

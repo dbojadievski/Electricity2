@@ -220,14 +220,14 @@ PackagedTask* g_pTaskDeserializeTri = nullptr;
 
 void ClearTasks()
 {
-    delete g_pTaskDeserializeTri;
-    delete g_pTaskSerializeTri;
+    //delete g_pTaskDeserializeTri;
+    //delete g_pTaskSerializeTri;
 }
 
 void
 LoadSampleSimpleMesh()
 {
-    g_pTaskDeserializeTri = new PackagedTask( ([] ( TaskParam pParam, const bool& bShouldCancel ) 
+    g_pTaskDeserializeTri = PackagedTask::Create( ([] ( TaskParam pParam, const bool& bShouldCancel ) 
     {
 		SerializationSystem::Deserialize( "triangle.mesh" );
 		const auto& meshes      = SimpleMeshLoader::GetMeshes();
@@ -241,7 +241,7 @@ LoadSampleSimpleMesh()
 		//SerializationSystem::Serialize( quadMesh, exportPathQuad );
     }) );
 
-    g_pTaskSerializeTri = new PackagedTask( ( [] ( TaskParam pParam, const bool& bShouldCancel ) 
+    g_pTaskSerializeTri = PackagedTask::Create( ( [] ( TaskParam pParam, const bool& bShouldCancel ) 
     {
 			const auto& meshes = SimpleMeshLoader::GetMeshes();
 			assert( meshes.size() == 1 );
@@ -252,7 +252,7 @@ LoadSampleSimpleMesh()
 			SerializationSystem::Serialize( mesh, exportPath );
             std::cout << "Serialized triangle" << std::endl;
     }) );
-    g_pTaskSerializeTri->SetOnCompleteHandler( &ClearTasks );
+    g_pTaskSerializeTri->SetOnCompleteOrCancelledHandler( &ClearTasks );
     g_pTaskDeserializeTri->SetFollowUpTask( g_pTaskSerializeTri );
     g_pTaskDeserializeTri->Submit();
     g_pTaskSerializeTri->Await();
@@ -442,6 +442,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
         }
         break;
     case WM_DESTROY:
+        g_pEngine->ShutDown();
         PostQuitMessage(0);
         break;
     default:
