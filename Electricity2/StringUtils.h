@@ -9,4 +9,20 @@ namespace Electricity::Utils
 	String& TrimBack( String& sString ) noexcept;
 	String& ToLower( String& sString ) noexcept;
 	String& ToUpper( String& sString ) noexcept;
+
+	//template<typename T, typename U>
+	//T string_cast( const U& u );
+
+
+	//template<>
+	//String string_cast<String >( const WString& u ) 
+	//{
+	//	return utf16ToUtf8( u );
+	//}
+
+	//template<>
+	//WString string_cast< WString >( const String& u ) 
+	//{
+	//	return utf8ToUtf16( u );
+	//}
 }

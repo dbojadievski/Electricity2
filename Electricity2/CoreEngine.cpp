@@ -5,11 +5,12 @@
 #include "Heap.h"
 #include "TaskQueue.h"
 
+#include "D3D12Rendering.h" // TODO(Dino): Abstract away.
+
 CoreEngine::CoreEngine() noexcept :
 	m_uPrevFrameTime( 0 )
 	, m_pSettingsSystem( nullptr )
 {
-	Initialize();
 }
 
 CoreEngine::~CoreEngine() noexcept
@@ -37,7 +38,7 @@ CoreEngine::GetSettingsSystem() noexcept
 }
 
 void
-CoreEngine::Initialize() noexcept
+CoreEngine::Initialize( const StringView& sCmdLine ) noexcept
 {
 	m_pSettingsSystem = CreateObject(SettingsSystem);
 	assert( m_pSettingsSystem.IsValid() );
@@ -50,6 +51,8 @@ CoreEngine::Initialize() noexcept
 	assert( bIsCoreSystem );
 
 	TaskQueue::Initialize();
+
+	void* pPtr = new Platform::Rendering::PCD3D12::PCD3D12Rendering();// gcnew( Platform::Rendering::PCD3D12::PCD3D12Rendering );
 }
 
 void

@@ -8,6 +8,12 @@
 #include "LinkedList.h"
 #include "SharedPtr.h"
 
+#ifdef USE_MEMORY_TRACKING
+#define OBJ_CONSTRUCTOR_PARAMS const char* m_pStrFilePath, int32 m_iLineNumber
+#else
+#define OBJ_CONSTRUCTOR_PARAMS
+#endif
+
 class HeapManager;
 
 class HeapNode

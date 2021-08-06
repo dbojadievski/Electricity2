@@ -115,6 +115,21 @@
     <Filter Include="Header Files\Core\Serialization">
       <UniqueIdentifier>{e290a590-adff-454b-8779-dbc17b7011ae}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Header Files\Rendering\PAR">
+      <UniqueIdentifier>{2dd319ff-57c1-401b-a42f-7d142be795cb}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Rendering\PAR">
+      <UniqueIdentifier>{aa2ccbc1-0625-4bd6-8ecb-739c7d75c3ad}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Platform\Rendering">
+      <UniqueIdentifier>{cbfb7e44-bd93-403f-95d4-95d8052d715c}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Platform\Rendering\D3D12">
+      <UniqueIdentifier>{c966dc08-d843-4f52-9f14-e87392f8735c}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Platform\Rendering">
+      <UniqueIdentifier>{35317fdb-d581-4276-bda5-18ee278ecd86}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="framework.h">
@@ -270,6 +285,12 @@
     <ClInclude Include="MemoryStreamBuf.h">
       <Filter>Header Files\Core\Memory</Filter>
     </ClInclude>
+    <ClInclude Include="PAR.h">
+      <Filter>Header Files\Rendering\PAR</Filter>
+    </ClInclude>
+    <ClInclude Include="D3D12Rendering.h">
+      <Filter>Header Files\Platform\Rendering</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Electricity2.cpp">
@@ -367,6 +388,12 @@
     </ClCompile>
     <ClCompile Include="TaskQueue.cpp">
       <Filter>Source Files\Core\Multithreading</Filter>
+    </ClCompile>
+    <ClCompile Include="PAR.cpp">
+      <Filter>Source Files\Rendering\PAR</Filter>
+    </ClCompile>
+    <ClCompile Include="D3D12Rendering.cpp">
+      <Filter>Source Files\Platform\Rendering\D3D12</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

@@ -37,6 +37,8 @@
 HeapManager Manager;
 App* pApp = nullptr;
 
+LPWSTR pCmdLine = nullptr;
+
 void 
 InitializeSystems()
 {
@@ -212,28 +214,48 @@ ConsoleSystemTest() noexcept
     }
 }
 
+
+PackagedTask* g_pTaskSerializeTri = nullptr;
+PackagedTask* g_pTaskDeserializeTri = nullptr;
+
+void ClearTasks()
+{
+    delete g_pTaskDeserializeTri;
+    delete g_pTaskSerializeTri;
+}
+
 void
 LoadSampleSimpleMesh()
 {
-    PackagedTask taskMesh( ([] ( TaskParam pParam ) 
+    g_pTaskDeserializeTri = new PackagedTask( ([] ( TaskParam pParam, const bool& bShouldCancel ) 
     {
 		SerializationSystem::Deserialize( "triangle.mesh" );
 		const auto& meshes      = SimpleMeshLoader::GetMeshes();
 		assert( meshes.size() == 1 );
-		const SharedPtr<SimpleMesh> pMesh = meshes[ 0 ];
-		const SimpleMesh& mesh  = *pMesh.Get();
 
-		const String exportPath = "triangle_export.dat";
-		SerializationSystem::Serialize( mesh, exportPath );
-
-		SerializationSystem::Deserialize( "quad.mesh" );
-		assert( meshes.size() == 2 );
-		const SharedPtr<SimpleMesh> pMeshQuad = meshes[ 1 ];
-		const String exportPathQuad     = "quad_export.dat";
-		const SimpleMesh& quadMesh      = *pMeshQuad.Get();
-		SerializationSystem::Serialize( quadMesh, exportPathQuad );
+		//SerializationSystem::Deserialize( "quad.mesh" );
+		//assert( meshes.size() == 2 );
+		//const SharedPtr<SimpleMesh> pMeshQuad = meshes[ 1 ];
+		//const String exportPathQuad     = "quad_export.dat";
+		//const SimpleMesh& quadMesh      = *pMeshQuad.Get();
+		//SerializationSystem::Serialize( quadMesh, exportPathQuad );
     }) );
-    TaskQueue::SubmitTask( taskMesh );
+
+    g_pTaskSerializeTri = new PackagedTask( ( [] ( TaskParam pParam, const bool& bShouldCancel ) 
+    {
+			const auto& meshes = SimpleMeshLoader::GetMeshes();
+			assert( meshes.size() == 1 );
+			const SharedPtr<SimpleMesh> pMesh = meshes[ 0 ];
+			const SimpleMesh& mesh = *pMesh.Get();
+
+			const String exportPath = "triangle_export.dat";
+			SerializationSystem::Serialize( mesh, exportPath );
+            std::cout << "Serialized triangle" << std::endl;
+    }) );
+    g_pTaskSerializeTri->SetOnCompleteHandler( &ClearTasks );
+    g_pTaskDeserializeTri->SetFollowUpTask( g_pTaskSerializeTri );
+    g_pTaskDeserializeTri->Submit();
+    g_pTaskSerializeTri->Await();
 }
 
 // Global Variables:
@@ -254,6 +276,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 {
     UNREFERENCED_PARAMETER(hPrevInstance);
     UNREFERENCED_PARAMETER(lpCmdLine);
+    pCmdLine = lpCmdLine;
 
     // TODO: Place code here.
     InitializeSystems();
@@ -367,8 +390,11 @@ BOOL InitInstance(HINSTANCE hInstance, int nCmdShow)
    App* pApp = new App( hWnd );
    g_pApp = SharedPtr<App>( pApp );
 
+   std::wstring stemp = std::wstring( pCmdLine );
+
    CoreEngine* pEngine = new CoreEngine();
    g_pEngine = SharedPtr<CoreEngine>( pEngine );
+   g_pEngine->Initialize( "" );
 
    ShowWindow(hWnd, nCmdShow);
    UpdateWindow(hWnd);

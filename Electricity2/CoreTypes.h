@@ -26,3 +26,5 @@ typedef uint32 CoreId;
 
 typedef std::string String;
 typedef std::string_view StringView;
+
+typedef std::wstring WString;
