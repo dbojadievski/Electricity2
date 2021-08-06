@@ -77,7 +77,7 @@ public:
 private:
 	static inline Array<PackagedTask*>	s_UnsubmittedTasks;
 	static inline Queue<PackagedTask*>	s_Tasks;
-	static inline CoreThread**			s_ppWorkers;
+	static inline CoreThread*			s_pWorkers;
 
 	static inline bool					s_bShutDown = false;
 	static uint32 __stdcall WorkerThreadFunc( ThreadFuncParamPtr ptrParam ) noexcept;

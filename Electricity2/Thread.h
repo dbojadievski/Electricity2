@@ -19,6 +19,7 @@ public:
 
 	~CoreThread() noexcept;
 	
+	void SetThreadStart( const CoreThreadStart& threadStart ) noexcept;
 	bool IsRunning() const noexcept;
 
 	bool IsValid() const noexcept;
@@ -78,4 +79,7 @@ private:
 	PlatformThreadID	m_PlatformThreadID;
 
 	static				uint32 s_uLogicalThreadCount;
+
+	// Utilities.
+	void InitializeFromThreadStart( const CoreThreadStart& ) noexcept;
 };

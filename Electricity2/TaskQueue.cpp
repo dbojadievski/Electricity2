@@ -192,25 +192,22 @@ TaskQueue::Initialize() noexcept
 	unique_lock<recursive_mutex> guard( g_Mutex );
 	s_uNumWorkers = CoreThread::GetLogicalThreadCount();
 	CoreThreadStart threadStart( &WorkerThreadFunc, true );
-	s_ppWorkers = new CoreThread*[ s_uNumWorkers ];
+	s_pWorkers = new CoreThread[ s_uNumWorkers ];
 	for ( uint32 uWorkerIdx = 0; uWorkerIdx < s_uNumWorkers; uWorkerIdx++ )
 	{
-		CoreThread* pThread = s_ppWorkers[ uWorkerIdx ];
-		pThread				= new CoreThread( threadStart );
+		CoreThread* pThread = &s_pWorkers[ uWorkerIdx ];
+		pThread->SetThreadStart( threadStart );
 	}
 }
 
 void
 TaskQueue::Deinitialize() noexcept
 {
-	unique_lock<recursive_mutex> guard( g_Mutex );
 	s_bShutDown = true;
 	for ( uint32 uWorkerIdx = 0; uWorkerIdx < s_uNumWorkers; uWorkerIdx++ )
 	{
-		CoreThread* pThread = s_ppWorkers[ uWorkerIdx ];
+		CoreThread* pThread = &s_pWorkers[ uWorkerIdx ];
 		pThread->Join();
-		delete pThread;
-		s_ppWorkers[ uWorkerIdx ] = nullptr;
 	}
 
 	for ( PackagedTask* pPackagedTask : s_UnsubmittedTasks )
@@ -218,7 +215,7 @@ TaskQueue::Deinitialize() noexcept
 		delete pPackagedTask;
 	}
 
-	delete[] s_ppWorkers;
+	delete[] s_pWorkers;
 }
 
 void

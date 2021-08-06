@@ -22,49 +22,11 @@ CoreThread::CoreThread( CoreThread&& other ) noexcept
 }
 
 CoreThread::CoreThread( const CoreThreadStart& threadStart ) noexcept :
-	m_Status( CoreThreadStatus::Invalid)
+	m_Status( CoreThreadStatus::Invalid )
 	, m_PlatformThreadID( 0 )
 	, m_pPlatformThread( nullptr )
 {	
-	// A thread with no worker function serves no purpose.
-	assert( threadStart.GetWorkFunction() );
-
-	// A detached thread that starts suspended can never be run, as it has no handle that can be used to start it.
-	assert( !threadStart.m_bDetached || threadStart.m_bScheduled ); 
-
-	if ( threadStart.GetWorkFunction() )
-	{
-		m_PlatformThreadID		= PlatformThread::Create( threadStart );
-		if ( m_PlatformThreadID )
-		{
-			// Assign our thread an ID.
-
-			m_pPlatformThread	= PlatformThread::GetByID( m_PlatformThreadID );
-			assert( m_pPlatformThread );
-
-			if ( threadStart.m_bDetached )
-			{
-				const bool bDetached	= PlatformThread::Detach( m_pPlatformThread );
-				assert( bDetached );
-				if ( bDetached )
-				{
-					m_Status			= CoreThreadStatus::Detached;
-				}
-				else
-				{
-					m_Status			= CoreThreadStatus::Running;
-				}
-			}
-			else if ( threadStart.m_bScheduled )
-			{
-				m_Status		= CoreThreadStatus::Running;
-			}
-			else
-			{
-				m_Status		= CoreThreadStatus::Suspended;
-			}
-		}
-	}
+	InitializeFromThreadStart( threadStart );
 }
 
 CoreThread::~CoreThread() noexcept
@@ -73,6 +35,15 @@ CoreThread::~CoreThread() noexcept
 
 	m_PlatformThreadID	= 0;
 	m_pPlatformThread	= nullptr;
+}
+
+void
+CoreThread::SetThreadStart( const CoreThreadStart& threadStart ) noexcept
+{
+	if ( m_pPlatformThread == nullptr )
+	{
+		InitializeFromThreadStart( threadStart );
+	}
 }
 
 bool
@@ -269,4 +240,47 @@ CoreThread::GetCurrentThread() noexcept
 	currThread.m_Status = CoreThreadStatus::Running;
 
 	return currThread;
+}
+
+void
+CoreThread::InitializeFromThreadStart( const CoreThreadStart& threadStart ) noexcept
+{
+	// A thread with no worker function serves no purpose.
+	assert( threadStart.GetWorkFunction() );
+
+	// A detached thread that starts suspended can never be run, as it has no handle that can be used to start it.
+	assert( !threadStart.m_bDetached || threadStart.m_bScheduled );
+
+	if ( threadStart.GetWorkFunction() )
+	{
+		m_PlatformThreadID = PlatformThread::Create( threadStart );
+		if ( m_PlatformThreadID )
+		{
+			// Assign our thread an ID.
+			m_pPlatformThread = PlatformThread::GetByID( m_PlatformThreadID );
+			assert( m_pPlatformThread );
+
+			if ( threadStart.m_bDetached )
+			{
+				const bool bDetached = PlatformThread::Detach( m_pPlatformThread );
+				assert( bDetached );
+				if ( bDetached )
+				{
+					m_Status = CoreThreadStatus::Detached;
+				}
+				else
+				{
+					m_Status = CoreThreadStatus::Running;
+				}
+			}
+			else if ( threadStart.m_bScheduled )
+			{
+				m_Status = CoreThreadStatus::Running;
+			}
+			else
+			{
+				m_Status = CoreThreadStatus::Suspended;
+			}
+		}
+	}
 }
