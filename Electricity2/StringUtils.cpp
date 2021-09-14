@@ -101,4 +101,49 @@ namespace Electricity::Utils
 		std::transform( sString.begin(), sString.end(), sString.begin(), [] ( unsigned char c ) { return std::toupper( c ); } );
 		return sString;
 	}
+
+	bool
+	StringToInteger( const String& sString, int32& iResult ) noexcept
+	{
+		bool bConverted			= true;
+		iResult					= -1;
+
+		int32 iPendingInt		= 0;
+		int32 iSignMultiplier	= 1;
+		int32 iStartIdx			= 0;
+
+		const uint32 uLen		= sString.length();
+		if ( uLen > 0 )
+		{
+			if ( sString[ 0 ] == '-' )
+			{
+				iSignMultiplier = -1;
+				iStartIdx++;
+			}
+			else if ( sString[ 0 ] == '+' )
+				iStartIdx++;
+
+			uint32 uIdx			= iStartIdx;
+			while ( uIdx < uLen )
+			{
+				const char c = sString[ uIdx ];
+				if ( c >= '0' && c <= '9' )
+				{
+					const int32 iChar = c - (int32) '0';
+					iPendingInt *= 10;
+					iPendingInt += iChar;
+				}
+				else
+				{
+					bConverted = false;
+					break;
+				}
+				uIdx++;
+			} // end parse loop
+		} // end if string not empty
+
+		if ( bConverted )
+			iResult = iSignMultiplier * iPendingInt;
+		return bConverted;
+	}
 }

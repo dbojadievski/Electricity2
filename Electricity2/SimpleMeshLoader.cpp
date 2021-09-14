@@ -17,7 +17,7 @@ SimpleMesh::SimpleMesh() noexcept :
 	, m_uNumVertices( 0 )
 	, m_aVertices( nullptr )
 	, m_uNumIndices( 0 )
-	, m_aIndices( nullptr )
+	, m_auIndices( nullptr )
 	, m_uNumSections( 0 )
 	, m_aSections( nullptr )
 {
@@ -29,9 +29,9 @@ SimpleMesh::~SimpleMesh() noexcept
 	m_uNumVertices = 0;
 	m_aVertices = nullptr;
 
-	delete [] m_aIndices;
+	delete [] m_auIndices;
 	m_uNumIndices = 0;
-	m_aIndices = nullptr;
+	m_auIndices = nullptr;
 
 	delete [] m_aSections;
 	m_uNumSections = 0;
@@ -60,7 +60,7 @@ SimpleMesh::ReadFromStream( std::istream& stream, const ChunkHeader& header ) no
 	stream >> uNumPolys;
 	pMesh->m_uNumIndices = 3 * uNumPolys;
 	if ( pMesh->m_uNumIndices )
-		pMesh->m_aIndices = new uint32[ pMesh->m_uNumIndices ];
+		pMesh->m_auIndices = new uint32[ pMesh->m_uNumIndices ];
 
 	stream >> pMesh->m_uNumSections;
 	if ( pMesh->m_uNumSections )
@@ -87,7 +87,7 @@ SimpleMesh::ReadFromStream( std::istream& stream, const ChunkHeader& header ) no
 	// Read polygons / index array.
 	while ( !stream.eof() && uReadIndices < pMesh->m_uNumIndices )
 	{
-		uint32* pIndices = &pMesh->m_aIndices[ uReadIndices ];
+		uint32* pIndices = &pMesh->m_auIndices[ uReadIndices ];
 		stream >> pIndices[ 0 ];
 		stream >> pIndices[ 1 ];
 		stream >> pIndices[ 2 ];
@@ -140,7 +140,7 @@ SimpleMesh::WriteToStream( std::ostream& stream ) const noexcept
 	// Continue with the index array in much the same fashion.
 	for ( uint32 uIndexIndex = 0; uIndexIndex < m_uNumIndices; uIndexIndex += 3 )
 	{
-		const uint32* auIndex = &m_aIndices[ uIndexIndex ];
+		const uint32* auIndex = &m_auIndices[ uIndexIndex ];
 		stream << auIndex[0] << " " << auIndex[1] << " " << auIndex[2] << std::endl;
 	}
 

@@ -1,5 +1,6 @@
 #pragma once
 #include <assert.h>
+#include "new.h"
 #include <map>
 
 #include "CoreObject.h"
@@ -104,40 +105,65 @@ void Electricity_Free( void* pBuffer );
 #ifdef USE_MEMORY_TRACKING
 	#define gcnew(type) Electricity_Malloc(sizeof(type), __FILE__, __LINE__)
 	#define gcalloc(uSize) Electricity_Malloc(uSize, __FILE__, __LINE__)
-#else 
+#else
 	#define gcnew(type) Electricity_New(sizeof(type))
 	#define gcalloc(uSize) Electricity_Malloc(uSize)
 #endif
 
 #define gcfree(pBuf) Electricity_Free(pBuf)
 #define gcdelete( pObj ) Electricity_Free( pObj );
-
-template <class Type>
-SharedPtr<Type> __GCNew__
-(
+	
+	template <class Type>
+	Type* __GCNew_Raw__
+	(
 #ifdef USE_MEMORY_TRACKING
-	const char* szFile
-	, size_t uLineNumber
+		const char* szFile
+		, size_t uLineNumber
 #endif
-)
-{
-	void* pBuffer = new Type(
+	)
+	{
+		void* pBuffer = new Type(
 #ifdef USE_MEMORY_TRACKING
-		szFile
-		, uLineNumber
+			szFile
+			, uLineNumber
 #endif
-	);
-	assert( pBuffer );
-	Type* pType = reinterpret_cast< Type* >( pBuffer );
-	assert( pType );
+		);
+		assert( pBuffer );
+		Type* pType = reinterpret_cast< Type* >( pBuffer );
+		assert( pType );
 
-	SharedPtr<Type> asShared( pType );
-	return asShared;
-}
+		return pType;
+	}
+
+	template <class Type>
+	SharedPtr<Type> __GCNew__
+	(
+#ifdef USE_MEMORY_TRACKING
+		const char* szFile
+		, size_t uLineNumber
+#endif
+	)
+	{
+		void* pBuffer = new Type(
+#ifdef USE_MEMORY_TRACKING
+			szFile
+			, uLineNumber
+#endif
+		);
+		assert( pBuffer );
+		Type* pType = reinterpret_cast< Type* >( pBuffer );
+		assert( pType );
+
+		SharedPtr<Type> asShared( pType );
+		return asShared;
+	}
+
 #ifdef USE_MEMORY_TRACKING
 #define CreateObject(Type) __GCNew__<Type>(__FILE__, __LINE__)
+#define CreateObjectRaw(Type) __GCNew_Raw__<Type>(__FILE__, __LINE__)
 #else
 #define CreateObject(Type) __GCNew__<Type>()
+#define CreateObjectRaw(Type) __GCNew_Raw__<Type>()
 #endif
 
 template <class Type>

@@ -48,7 +48,7 @@ private:
 	SimpleVertex*	m_aVertices;
 
 	uint32			m_uNumIndices;
-	uint32*			m_aIndices;
+	uint32*			m_auIndices;
 
 	uint32			m_uNumSections;
 	MeshSection*	m_aSections;

@@ -17,7 +17,9 @@ using Array = std::vector<Type, Allocator<Type>>;
 template<class Key, class Value>
 using Pair = std::pair<Key, Value>;
 
-#define Map std::map
+template<class Key, class Value>
+using Map = std::map<Key, Value>;
+
 #define MakePair std::make_pair
 
 template <class Type>

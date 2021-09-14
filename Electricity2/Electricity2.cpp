@@ -1,8 +1,11 @@
 // Electricity2.cpp : Defines the entry point for the application.
 //
 
-#include "framework.h"
+//#include "framework.h"
+#include "new.h"
 #include "Electricity2.h"
+#include "Framework.h"
+#include "targetver.h"
 
 #include "App.h"
 #include "CoreTypes.h"
@@ -31,13 +34,12 @@
 #include "TaskQueue.h"
 
 #include <fstream>
-
 #define MAX_LOADSTRING 100
 
 HeapManager Manager;
 App* pApp = nullptr;
 
-LPWSTR pCmdLine = nullptr;
+LPSTR pCmdLine = nullptr;
 
 void 
 InitializeSystems()
@@ -267,11 +269,10 @@ WCHAR szWindowClass[MAX_LOADSTRING];            // the main window class name
 ATOM                MyRegisterClass(HINSTANCE hInstance);
 BOOL                InitInstance(HINSTANCE, int);
 LRESULT CALLBACK    WndProc(HWND, UINT, WPARAM, LPARAM);
-INT_PTR CALLBACK    About(HWND, UINT, WPARAM, LPARAM);
 
-int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
+int APIENTRY WinMain(_In_ HINSTANCE hInstance,
                      _In_opt_ HINSTANCE hPrevInstance,
-                     _In_ LPWSTR    lpCmdLine,
+                     _In_ LPSTR    lpCmdLine,
                      _In_ int       nCmdShow)
 {
     UNREFERENCED_PARAMETER(hPrevInstance);
@@ -282,16 +283,6 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
     InitializeSystems();
 
 #ifdef _DEBUG
-    {
-        // Heap tests.
-        auto p = gcalloc( 10 );
-        auto q = gcalloc( 20 );
-        gcfree( p );
-        auto r = gcalloc( 10 );
-        gcfree( q );
-        gcfree( r );
-    }
-
     //UnitTestManager::GetInstance().RunAllUnitTests();
     //UnitTest_CmdLineParser ParserTest;
     //assert(ParserTest());
@@ -302,8 +293,6 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 #endif
     
     // Can we do futures in our version of C++?
-
-    auto fut = std::async( [] {return 3 + 4; } );
 
     // Initialize global strings
     LoadStringW(hInstance, IDS_APP_TITLE, szTitle, MAX_LOADSTRING);
@@ -345,9 +334,9 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 //
 ATOM MyRegisterClass(HINSTANCE hInstance)
 {
-    WNDCLASSEXW wcex;
+    WNDCLASSEXW wcex = {};
 
-    wcex.cbSize = sizeof(WNDCLASSEX);
+    wcex.cbSize         = sizeof(WNDCLASSEX);
 
     wcex.style          = CS_HREDRAW | CS_VREDRAW;
     wcex.lpfnWndProc    = WndProc;
@@ -357,7 +346,6 @@ ATOM MyRegisterClass(HINSTANCE hInstance)
     wcex.hIcon          = LoadIcon(hInstance, MAKEINTRESOURCE(IDI_ELECTRICITY2));
     wcex.hCursor        = LoadCursor(nullptr, IDC_ARROW);
     wcex.hbrBackground  = (HBRUSH)(COLOR_WINDOW+1);
-    wcex.lpszMenuName   = MAKEINTRESOURCEW(IDC_ELECTRICITY2);
     wcex.lpszClassName  = szWindowClass;
     wcex.hIconSm        = LoadIcon(wcex.hInstance, MAKEINTRESOURCE(IDI_SMALL));
 
@@ -378,23 +366,69 @@ BOOL InitInstance(HINSTANCE hInstance, int nCmdShow)
 {
    hInst = hInstance; // Store instance handle in our global variable
 
-   HWND hWnd = CreateWindowW(szWindowClass, szTitle, WS_OVERLAPPEDWINDOW,
-      CW_USEDEFAULT, 0, CW_USEDEFAULT, 0, nullptr, nullptr, hInstance, nullptr);
+   LPSTR pCommandline = GetCommandLineA();
+
+
+   SetProcessDpiAwarenessContext( DPI_AWARENESS_CONTEXT_PER_MONITOR_AWARE_V2 );
+
+   // Load these from app settings.
+   uint32 uWidth = 2560, uHeight = 1440;
+
+   // Initialize the window class.
+   WNDCLASSEX windowClass = { 0 };
+   windowClass.cbSize = sizeof( WNDCLASSEX );
+   windowClass.style = CS_HREDRAW | CS_VREDRAW;
+   windowClass.lpfnWndProc = WndProc;
+   windowClass.hInstance = hInstance;
+   windowClass.hCursor = LoadCursor( NULL, IDC_ARROW );
+   windowClass.lpszClassName = L"Electricity2";
+   RegisterClassEx( &windowClass );
+
+   RECT windowRect = { 0, 0, static_cast< LONG >( uWidth ), static_cast< LONG >( uHeight ) };
+   HWND hWnd = CreateWindow(
+	   windowClass.lpszClassName,
+	   L"Electricity 2",
+	   WS_OVERLAPPEDWINDOW,
+	   CW_USEDEFAULT,
+	   CW_USEDEFAULT,
+	   windowRect.right - windowRect.left,
+	   windowRect.bottom - windowRect.top,
+	   nullptr,        // We have no parent window.
+	   nullptr,        // We aren't using menus.
+	   hInstance,
+	   nullptr );
 
    if (!hWnd)
    {
       return FALSE;
    }
 
-   SetProcessDpiAwarenessContext( DPI_AWARENESS_CONTEXT_PER_MONITOR_AWARE_V2 );
-   App* pApp = new App( hWnd );
-   g_pApp = SharedPtr<App>( pApp );
+   char* sCmdLineWithoutExeName = pCommandline;
+   if ( *sCmdLineWithoutExeName == '"' ) {
+	   ++sCmdLineWithoutExeName;
+	   while ( *sCmdLineWithoutExeName )
+		   if ( *sCmdLineWithoutExeName++ == '"' )
+			   break;
+   }
+   else {
+	   while ( *sCmdLineWithoutExeName && *sCmdLineWithoutExeName != ' ' && *sCmdLineWithoutExeName != '\t' )
+		   ++sCmdLineWithoutExeName;
+   }
+   /* (optionally) skip spaces preceding the first argument */
+   while ( *sCmdLineWithoutExeName == ' ' || *sCmdLineWithoutExeName == '\t' )
+	   sCmdLineWithoutExeName++;
+   String cmdLineString( sCmdLineWithoutExeName );
 
-   std::wstring stemp = std::wstring( pCmdLine );
+
+   App* pApp = new App( hWnd, cmdLineString );
+   g_pApp = SharedPtr<App>( pApp );
 
    CoreEngine* pEngine = new CoreEngine();
    g_pEngine = SharedPtr<CoreEngine>( pEngine );
-   g_pEngine->Initialize( "" );
+
+
+   g_pEngine->Initialize( cmdLineString );
+
 
    ShowWindow(hWnd, nCmdShow);
    UpdateWindow(hWnd);
@@ -407,7 +441,6 @@ BOOL InitInstance(HINSTANCE hInstance, int nCmdShow)
 //
 //  PURPOSE: Processes messages for the main window.
 //
-//  WM_COMMAND  - process the application menu
 //  WM_PAINT    - Paint the main window
 //  WM_DESTROY  - post a quit message and return
 //
@@ -416,23 +449,6 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 {
     switch (message)
     {
-    case WM_COMMAND:
-        {
-            int wmId = LOWORD(wParam);
-            // Parse the menu selections:
-            switch (wmId)
-            {
-            case IDM_ABOUT:
-                DialogBox(hInst, MAKEINTRESOURCE(IDD_ABOUTBOX), hWnd, About);
-                break;
-            case IDM_EXIT:
-                DestroyWindow(hWnd);
-                break;
-            default:
-                return DefWindowProc(hWnd, message, wParam, lParam);
-            }
-        }
-        break;
     case WM_PAINT:
         {
             PAINTSTRUCT ps;
@@ -451,27 +467,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
     return 0;
 }
 
-// Message handler for about box.
-INT_PTR CALLBACK About(HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam)
-{
-    UNREFERENCED_PARAMETER(lParam);
-    switch (message)
-    {
-    case WM_INITDIALOG:
-        return (INT_PTR)TRUE;
-
-    case WM_COMMAND:
-        if (LOWORD(wParam) == IDOK || LOWORD(wParam) == IDCANCEL)
-        {
-            EndDialog(hDlg, LOWORD(wParam));
-            return (INT_PTR)TRUE;
-        }
-        break;
-    }
-    return (INT_PTR)FALSE;
-}
-
 int main()
 {
-	return wWinMain( GetModuleHandle( NULL ), NULL, GetCommandLineW(), SW_SHOWNORMAL );
+	return WinMain( GetModuleHandle( NULL ), NULL, GetCommandLineA(), SW_SHOWNORMAL );
 }

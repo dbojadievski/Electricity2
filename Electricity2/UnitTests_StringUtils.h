@@ -52,6 +52,51 @@ private:
 		assert( sample == "SAMPLE" );
 	}
 
+	void UnitTest_StringUtils_ToInt() const
+	{
+		{
+			String sample = "1";
+			int iResult = -1;
+			const bool bParsed = Electricity::Utils::StringToInteger( sample, iResult );
+			assert( bParsed && iResult == 1 );
+		}
+
+		{
+			String sample = "10";
+			int iResult = -1;
+			const bool bParsed = Electricity::Utils::StringToInteger( sample, iResult );
+			assert( bParsed && iResult == 10 );
+		}
+
+		{
+			String sample = "-10";
+			int iResult = -1;
+			const bool bParsed = Electricity::Utils::StringToInteger( sample, iResult );
+			assert( bParsed && iResult == -10 );
+		}
+
+		{
+			String sample = "+10";
+			int iResult = -1;
+			const bool bParsed = Electricity::Utils::StringToInteger( sample, iResult );
+			assert( bParsed && iResult == +10 );
+		}
+
+		{
+			String sample = "+-10";
+			int iResult = -1;
+			const bool bParsed = Electricity::Utils::StringToInteger( sample, iResult );
+			assert( !bParsed && iResult == -1 );
+		}
+
+		{
+			String sample = "+1 -0";
+			int iResult = -1;
+			const bool bParsed = Electricity::Utils::StringToInteger( sample, iResult );
+			assert( !bParsed && iResult == -1 );
+		}
+	}
+
 	virtual bool operator()() const
 	{
 		UnitTest_StringUtils_Explode();
@@ -59,6 +104,7 @@ private:
 		UnitTest_StringUtils_TrimBack();
 		UnitTest_StringUtils_ToLower();
 		UnitTest_StringUtils_ToUpper();
+		UnitTest_StringUtils_ToInt();
 
 		return true;
 	}

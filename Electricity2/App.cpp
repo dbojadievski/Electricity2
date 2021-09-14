@@ -3,8 +3,9 @@
 
 SharedPtr<App> g_pApp = nullptr;
 
-App::App( PPlatformWindow platformWindow ) noexcept :
+App::App( PPlatformWindow platformWindow, const String& cmdLineArgs ) noexcept :
 	m_PlatformWindow( platformWindow )
+	, m_CommandLineParser( cmdLineArgs )
 {
 	assert( m_PlatformWindow );
 }

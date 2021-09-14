@@ -2,12 +2,19 @@
 
 #include "CoreTypes.h"
 #include "CoreSystem.h"
+
 namespace Electricity::Rendering
 {
 	class PAR
 	{
-		virtual bool Initialize() noexcept = 0;
-		virtual void Update( uint32 uFrameDelta ) noexcept = 0;
-		virtual bool ShutDown() noexcept = 0;
+	public:
+		static bool Initialize() noexcept;
+		static void Update( uint32 uFrameDelta ) noexcept;
+		static bool ShutDown() noexcept;
+
+		~PAR() noexcept {};
+	private:
+		static void Platform_Initialize() noexcept;
+		static void Platform_Update( uint32 uFrameDelta ) noexcept;
 	};
 }

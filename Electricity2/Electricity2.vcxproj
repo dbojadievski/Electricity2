@@ -23,7 +23,7 @@
     <Keyword>Win32Proj</Keyword>
     <ProjectGuid>{60eb5ffb-d443-4461-b215-052a193cd27e}</ProjectGuid>
     <RootNamespace>Electricity2</RootNamespace>
-    <WindowsTargetPlatformVersion>10.0</WindowsTargetPlatformVersion>
+    <WindowsTargetPlatformVersion>10.0.19041.0</WindowsTargetPlatformVersion>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
@@ -72,6 +72,8 @@
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <LinkIncremental>true</LinkIncremental>
+    <IncludePath>C:\Users\dino.bojadjievski\source\repos\Electricity2\Electricity2\DXTK\Inc;$(IncludePath)</IncludePath>
+    <SourcePath>C:\Users\dino.bojadjievski\source\repos\Electricity2\Electricity2\DXTK\Src;$(SourcePath)</SourcePath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <LinkIncremental>false</LinkIncremental>
@@ -86,7 +88,7 @@
     <ClCompile>
       <WarningLevel>Level3</WarningLevel>
       <SDLCheck>true</SDLCheck>
-      <PreprocessorDefinitions>WIN32;_DEBUG;_WINDOWS;USE_MEMORY_TRACKING;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>WIN32;_DEBUG;_WINDOWS;USE_MEMORY_TRACKING;PAR_PLATFORM_PCD3D12;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <LanguageStandard>stdcpp17</LanguageStandard>
       <TreatWarningAsError>true</TreatWarningAsError>
@@ -149,6 +151,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="App.h" />
+    <ClInclude Include="ChronoHelper.h" />
     <ClInclude Include="ChunkHeader.h" />
     <ClInclude Include="ConsoleSystem.h" />
     <ClInclude Include="CoreContainers.h" />
@@ -158,21 +161,35 @@
     <ClInclude Include="CoreSystem.h" />
     <ClInclude Include="CoreTimer.h" />
     <ClInclude Include="D3D12Rendering.h" />
+    <ClInclude Include="d3dx12.h" />
     <ClInclude Include="DisplaySettings.h" />
+    <ClInclude Include="DXTK\Src\d3dx12.h" />
+    <ClInclude Include="DXTK\Src\dds.h" />
+    <ClInclude Include="DXTK\Src\pch.h" />
     <ClInclude Include="ETextureChannels.h" />
+    <ClInclude Include="Framework.h" />
     <ClInclude Include="HashUtils.h" />
     <ClInclude Include="ISerializable.h" />
     <ClInclude Include="Math.h" />
     <ClInclude Include="MemoryStreamBuf.h" />
+    <ClInclude Include="MemUtils.h" />
+    <ClInclude Include="new.h" />
     <ClInclude Include="PAR.h" />
+    <ClInclude Include="PCD3D12SwapChain.h" />
     <ClInclude Include="PlatformAppDefines.h" />
     <ClInclude Include="PlatformDisplaySettings.h" />
     <ClInclude Include="PlatformTime.h" />
     <ClInclude Include="PlatformUtils.h" />
+    <ClInclude Include="PlatformVRAMPool.h" />
+    <ClInclude Include="PlatformVRAMPool_PCD3D12.h" />
+    <ClInclude Include="RenderTargetFormat.h" />
+    <ClInclude Include="Resource.h" />
     <ClInclude Include="SerializationSystem.h" />
     <ClInclude Include="SettingsSystem.h" />
     <ClInclude Include="SimpleMeshLoader.h" />
     <ClInclude Include="StringUtils.h" />
+    <ClInclude Include="SwapChain.h" />
+    <ClInclude Include="targetver.h" />
     <ClInclude Include="TaskQueue.h" />
     <ClInclude Include="UnitTests_CmdLineParser.h" />
     <ClInclude Include="CommandLineParser.h" />
@@ -181,7 +198,6 @@
     <ClInclude Include="FastDelegate.h" />
     <ClInclude Include="Fiber.h" />
     <ClInclude Include="FiberStart.h" />
-    <ClInclude Include="framework.h" />
     <ClInclude Include="Heap.h" />
     <ClInclude Include="LinkedList.h" />
     <ClInclude Include="PlatformFiber.h" />
@@ -189,9 +205,7 @@
     <ClInclude Include="PlatformThread.h" />
     <ClInclude Include="PlatformThreadingDefines.h" />
     <ClInclude Include="PtrTypeUnitTests.h" />
-    <ClInclude Include="Resource.h" />
     <ClInclude Include="SharedPtr.h" />
-    <ClInclude Include="targetver.h" />
     <ClInclude Include="Thread.h" />
     <ClInclude Include="ThreadStart.h" />
     <ClInclude Include="UniquePtr.h" />
@@ -201,6 +215,9 @@
     <ClInclude Include="UnitTests_StringUtils.h" />
     <ClInclude Include="UUID.h" />
     <ClInclude Include="Vertex.h" />
+    <ClInclude Include="VRAMHandle.h" />
+    <ClInclude Include="VRAMManager.h" />
+    <ClInclude Include="VRAMPool.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="App.cpp" />
@@ -213,30 +230,36 @@
     <ClCompile Include="CoreTimer.cpp" />
     <ClCompile Include="D3D12Rendering.cpp" />
     <ClCompile Include="DisplaySettings.cpp" />
+    <ClCompile Include="DXTK\Src\pch.cpp" />
     <ClCompile Include="Electricity2.cpp" />
     <ClCompile Include="Fiber.cpp" />
     <ClCompile Include="FiberStart.cpp" />
-    <ClCompile Include="HashUtils.cpp" />
     <ClCompile Include="Heap.cpp" />
     <ClCompile Include="PAR.cpp" />
     <ClCompile Include="PlatformAppDefines_Windows.cpp" />
     <ClCompile Include="PlatformDisplaySettings_Windows.cpp" />
     <ClCompile Include="PlatformFiber_Windows.cpp" />
     <ClCompile Include="PlatformMemory_Windows.cpp" />
+    <ClCompile Include="PlatformSwapChain_D3D12.cpp" />
     <ClCompile Include="PlatformThreadingDefines_Windows.cpp" />
     <ClCompile Include="PlatformThread_Windows.cpp" />
     <ClCompile Include="PlatformTime_Windows.cpp" />
     <ClCompile Include="PlatformUtils_Windows.cpp" />
+    <ClCompile Include="PlatformVRAMPool_PCD3D12.cpp" />
     <ClCompile Include="SerializationSystem.cpp" />
     <ClCompile Include="SettingsSystem.cpp" />
     <ClCompile Include="SimpleMeshLoader.cpp" />
     <ClCompile Include="StringUtils.cpp" />
+    <ClCompile Include="SwapChain.cpp" />
     <ClCompile Include="TaskQueue.cpp" />
     <ClCompile Include="Thread.cpp" />
     <ClCompile Include="ThreadStart.cpp" />
     <ClCompile Include="UnitTests.cpp" />
     <ClCompile Include="UUID.cpp" />
     <ClCompile Include="Vertex.cpp" />
+    <ClCompile Include="VRAMHandle.cpp" />
+    <ClCompile Include="VRAMManager.cpp" />
+    <ClCompile Include="VRAMPool.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="Electricity2.rc" />

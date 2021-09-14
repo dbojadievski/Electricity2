@@ -130,17 +130,17 @@
     <Filter Include="Header Files\Platform\Rendering">
       <UniqueIdentifier>{35317fdb-d581-4276-bda5-18ee278ecd86}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Header Files\Platform\Rendering\PCD3DX12">
+      <UniqueIdentifier>{9eb1093f-fdb4-40d7-b546-479b8f145ac5}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Rendering\PAR\Formats">
+      <UniqueIdentifier>{093fb774-057c-46f7-b7ee-ca7e76d55de3}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Rendering\Platform">
+      <UniqueIdentifier>{24a751bc-71be-43cd-874f-0828804cc5ef}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="framework.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="targetver.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Resource.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="Electricity2.h">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -264,9 +264,6 @@
     <ClInclude Include="Vertex.h">
       <Filter>Header Files\Rendering</Filter>
     </ClInclude>
-    <ClInclude Include="HashUtils.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="ChunkHeader.h">
       <Filter>Header Files\Core\Serialization</Filter>
     </ClInclude>
@@ -288,8 +285,65 @@
     <ClInclude Include="PAR.h">
       <Filter>Header Files\Rendering\PAR</Filter>
     </ClInclude>
+    <ClInclude Include="DXTK\Src\d3dx12.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="DXTK\Src\dds.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="DXTK\Src\pch.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="HashUtils.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Framework.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Resource.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="targetver.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="ChronoHelper.h">
+      <Filter>Source Files\Rendering\PAR</Filter>
+    </ClInclude>
+    <ClInclude Include="d3dx12.h">
+      <Filter>Header Files\Platform\Rendering\PCD3DX12</Filter>
+    </ClInclude>
     <ClInclude Include="D3D12Rendering.h">
       <Filter>Header Files\Platform\Rendering</Filter>
+    </ClInclude>
+    <ClInclude Include="SwapChain.h">
+      <Filter>Header Files\Rendering\PAR</Filter>
+    </ClInclude>
+    <ClInclude Include="PCD3D12SwapChain.h">
+      <Filter>Header Files\Platform\Rendering\PCD3DX12</Filter>
+    </ClInclude>
+    <ClInclude Include="RenderTargetFormat.h">
+      <Filter>Header Files\Rendering\PAR\Formats</Filter>
+    </ClInclude>
+    <ClInclude Include="VRAMHandle.h">
+      <Filter>Header Files\Rendering\PAR</Filter>
+    </ClInclude>
+    <ClInclude Include="MemUtils.h">
+      <Filter>Header Files\Core\Memory</Filter>
+    </ClInclude>
+    <ClInclude Include="new.h">
+      <Filter>Header Files\Core\Memory</Filter>
+    </ClInclude>
+    <ClInclude Include="PlatformVRAMPool.h">
+      <Filter>Source Files\Platform\Rendering</Filter>
+    </ClInclude>
+    <ClInclude Include="PlatformVRAMPool_PCD3D12.h">
+      <Filter>Header Files\Rendering\Platform</Filter>
+    </ClInclude>
+    <ClInclude Include="VRAMManager.h">
+      <Filter>Header Files\Rendering\PAR</Filter>
+    </ClInclude>
+    <ClInclude Include="VRAMPool.h">
+      <Filter>Header Files\Rendering\PAR</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -377,9 +431,6 @@
     <ClCompile Include="SimpleMeshLoader.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="HashUtils.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="SerializationSystem.cpp">
       <Filter>Source Files\Core\Serialization</Filter>
     </ClCompile>
@@ -394,6 +445,27 @@
     </ClCompile>
     <ClCompile Include="D3D12Rendering.cpp">
       <Filter>Source Files\Platform\Rendering\D3D12</Filter>
+    </ClCompile>
+    <ClCompile Include="DXTK\Src\pch.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="SwapChain.cpp">
+      <Filter>Source Files\Rendering\PAR</Filter>
+    </ClCompile>
+    <ClCompile Include="PlatformSwapChain_D3D12.cpp">
+      <Filter>Source Files\Platform\Rendering\D3D12</Filter>
+    </ClCompile>
+    <ClCompile Include="VRAMHandle.cpp">
+      <Filter>Source Files\Rendering\PAR</Filter>
+    </ClCompile>
+    <ClCompile Include="PlatformVRAMPool_PCD3D12.cpp">
+      <Filter>Source Files\Platform\Rendering\D3D12</Filter>
+    </ClCompile>
+    <ClCompile Include="VRAMManager.cpp">
+      <Filter>Source Files\Rendering\PAR</Filter>
+    </ClCompile>
+    <ClCompile Include="VRAMPool.cpp">
+      <Filter>Source Files\Rendering\PAR</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

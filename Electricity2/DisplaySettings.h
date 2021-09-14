@@ -19,6 +19,9 @@ struct DisplaySettings
 	
 	uint32		m_uHorizontalResolution;
 	uint32		m_uVerticalResolution;
+
+	uint32		m_uRequestedHorizontalResolution;
+	uint32		m_uRequestedVerticalResolution;
 	
 	bool		m_bIsHDRSupported;
 };

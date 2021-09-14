@@ -3,9 +3,10 @@
 #include <assert.h>
 #include "CoreTimer.h"
 #include "Heap.h"
+#include "PAR.h"
+#include "SettingsSystem.h"
 #include "TaskQueue.h"
 
-#include "D3D12Rendering.h" // TODO(Dino): Abstract away.
 
 CoreEngine::CoreEngine() noexcept :
 	m_uPrevFrameTime( 0 )
@@ -27,14 +28,14 @@ CoreEngine::Update() noexcept
 
 	// Update all systems.
 	m_pSettingsSystem->Update( uFrameDelta );
-
+	Electricity::Rendering::PAR::Update( uFrameDelta );
 	m_uPrevFrameTime			= uCurrFrameTime;
 }
 
 SharedPtr<SettingsSystem>
 CoreEngine::GetSettingsSystem() noexcept
 {
-	return SharedPtr<SettingsSystem>(m_pSettingsSystem);
+	return m_pSettingsSystem;
 }
 
 void
@@ -49,18 +50,19 @@ CoreEngine::Initialize( const StringView& sCmdLine ) noexcept
 	const auto ID = CoreSystem::GetClassId();
 	const bool bIsCoreSystem	= m_pSettingsSystem->IsA<CoreSystem>();
 	assert( bIsCoreSystem );
+	m_pSettingsSystem->Initialize();
 
 	TaskQueue::Initialize();
-
-	void* pPtr = new Platform::Rendering::PCD3D12::PCD3D12Rendering();// gcnew( Platform::Rendering::PCD3D12::PCD3D12Rendering );
+	Electricity::Rendering::PAR::Initialize();
 }
 
 void
 CoreEngine::ShutDown() noexcept
 {
+	Electricity::Rendering::PAR::ShutDown();
 	TaskQueue::Deinitialize();
-	m_pSettingsSystem->ShutDown();
-	DeleteObject( m_pSettingsSystem.Get() );
+	m_pSettingsSystem->Deinitialize();
+	m_pSettingsSystem.RemoveRef();
 
 	m_uPrevFrameTime = 0;
 }

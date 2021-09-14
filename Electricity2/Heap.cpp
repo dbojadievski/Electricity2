@@ -503,14 +503,13 @@ Electricity_Free( void* pBuffer )
 }
 
 void*
-operator new( size_t n
+operator new( decltype( sizeof( 0 ) ) n
 #ifdef USE_MEMORY_TRACKING
 	, const char* szFile
 	, size_t nLineNo
 #endif
 	)
 {
-
 	return Electricity_Malloc( n
 #ifdef USE_MEMORY_TRACKING
 		, szFile
@@ -520,7 +519,7 @@ operator new( size_t n
 }
 
 void*
-operator new[]( size_t n
+operator new[]( decltype( sizeof( 0 ) ) n
 #ifdef USE_MEMORY_TRACKING
 	, const char* szFile
 	, size_t nLineNo

@@ -26,3 +26,18 @@ typedef FASTMAT4 Transform;
 
 #define FASTMAT_IDENTITY DirectX::XMMatrixIdentity
 #define FASTMAT_TRANSPOSE DirectX::XMMatrixTranspose
+
+namespace Electricity::Math
+{
+	template <typename Type>
+	inline Type Min( const Type A, const Type B )
+	{
+		return ( A > B ? B : A );
+	}
+
+	template <typename Type>
+	inline Type Max( const Type A, const Type B )
+	{
+		return ( A > B ? A : B );
+	}
+}

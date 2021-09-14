@@ -7,21 +7,22 @@
 class CommandLineParser final
 {
 public:
-	CommandLineParser( const std::string sCmdLine ) noexcept;
+	CommandLineParser( const String sCmdLine = "" ) noexcept;
 
 	void Initialize() noexcept;
 	void ShutDown() noexcept;
 
-	const std::string& GetCommandLine() const noexcept;
+	void SetCommandLine( const String wsCommandLine ) noexcept;
+	const String& GetCommandLine() const noexcept; 
 	uint32 GetNumParams() const noexcept;
 
-	bool HasToken( const std::string& sToken ) const noexcept;
-	bool GetValue( const std::string sToken, std::string& sOutValue ) const noexcept;
+	bool HasToken( const String& sToken ) const noexcept;
+	bool GetValue( const String sToken, String& sOutValue ) const noexcept;
 
 	~CommandLineParser() noexcept;
 private:
 	void ParseCmdLine() noexcept;
 
-	std::string							m_sCmdLine;
-	std::map<std::string, std::string>	m_mTokens;
+	String						m_sCmdLine;
+	std::map<String, String>	m_mTokens;
 };

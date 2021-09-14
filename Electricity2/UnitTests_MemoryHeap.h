@@ -44,28 +44,28 @@ private:
 
 	void UnitTest_Heap_All() const
 	{
-		//// The first one we'll properly delete and make sure it doesn't go boom.
+		// The first one we'll properly delete and make sure it doesn't go boom.
 		//SharedPtr<Vector3> pSharedVector = CreateObject( Vector3 ); /* static_cast< Vector3* >( gcnew( Vector3 ) )*/;
-		//DeleteObject( &pSharedVector );
-		////assert( pSharedVector = nullptr );
-		//
-		//bool bPassedSecondTest = false;
-		//Vector3* pVector = nullptr;
-		//try
-		//{
-		//	// Let's see what happens when we new some memory.
-		//	// The second one we'll forget about and let it explode.
-		//	pVector = static_cast< Vector3* >( gcnew( Vector3 ) );
-		//	assert( pVector );
-		//	HeapManager::CheckForMemoryLeak();
-		//}
-		//catch (...)
-		//{
-		//	bPassedSecondTest = true;
-		//	gcdelete( pVector );
-		//	
-		//}
-		//assert( bPassedSecondTest );
+	//	DeleteObject( &pSharedVector );
+	//	//assert( pSharedVector = nullptr );
+	//	
+	//	bool bPassedSecondTest = false;
+	//	Vector3* pVector = nullptr;
+	//	try
+	//	{
+	//		// Let's see what happens when we new some memory.
+	//		// The second one we'll forget about and let it explode.
+	//		pVector = static_cast< Vector3* >( gcnew( Vector3 ) );
+	//		assert( pVector );
+	//		HeapManager::CheckForMemoryLeak();
+	//	}
+	//	catch (...)
+	//	{
+	//		bPassedSecondTest = true;
+	//		gcdelete( pVector );
+	//		
+	//	}
+	//	assert( bPassedSecondTest );
 	}
 
 	virtual bool operator()() const

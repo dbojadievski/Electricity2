@@ -12,7 +12,7 @@ namespace Electricity::Utils
 		// FNV-1a 64 bit algorithm
 		uint32 result = 2166136261; // FNV offset basis
 
-		for (char c : toHash ) {
+		for ( char c : toHash ) {
 			result ^= c;
 			result *= 0x01000193; // FNV prime
 		}

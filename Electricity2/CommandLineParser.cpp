@@ -8,7 +8,7 @@
 CommandLineParser::CommandLineParser( String sCmdLine ) noexcept
 	: m_sCmdLine( sCmdLine )
 {
-
+	Initialize( );
 }
 
 void
@@ -37,13 +37,13 @@ CommandLineParser::GetNumParams() const noexcept
 }
 
 bool
-CommandLineParser::HasToken( const std::string& sToken ) const noexcept
+CommandLineParser::HasToken( const String& sToken ) const noexcept
 {
 	return ( m_mTokens.find( sToken ) != m_mTokens.end() );
 }
 
 bool
-CommandLineParser::GetValue( const std::string sToken, std::string& sOutValue ) const noexcept
+CommandLineParser::GetValue( const String sToken, String& sOutValue ) const noexcept
 {
 	bool bFound			= false;
 	sOutValue.clear();

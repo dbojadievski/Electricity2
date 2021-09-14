@@ -10,7 +10,6 @@ class UnitTest_CmdLineParser : UnitTest
 public:
 	UnitTest_CmdLineParser() noexcept : UnitTest( "UnitTest_CmdLineParser" ) {}
 private:
-	typedef std::string String;
 	void ParseSingleParameter() const
 	{
 		CommandLineParser parser("x=5");

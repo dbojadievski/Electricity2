@@ -1,10 +1,9 @@
 #pragma once
 
+#include "CoreObject.h"
 #include "CoreTypes.h"
 #include "CoreSystem.h"
 #include "DisplaySettings.h"
-
-#include "CoreObject.h"
 #include "SharedPtr.h"
 
 class SettingsSystem final : public CoreSystem
@@ -21,6 +20,8 @@ public:
 	uint64 GetMemorySizeInMegabytes() const noexcept;
 	uint32 GetHardwareThreadCount() const noexcept;
 private:
+	bool ParseResolutionFromCmdLine() noexcept;
+
 	uint64			m_uMemorySize;
 	DisplaySettings m_DisplaySettings;
 };
