@@ -1,2 +1,5 @@
-﻿  VRAMPool.cpp
+﻿  VRAMHandle.cpp
+  VRAMManager.cpp
+  VRAMPool.cpp
+  Generating Code...
   Electricity2.vcxproj -> C:\Users\dino.bojadjievski\source\repos\Electricity2\Debug\Electricity2.exe

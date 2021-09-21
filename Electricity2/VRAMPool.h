@@ -91,7 +91,8 @@ public:
 
 private:
 	uint16	m_uNumSlots;
-	uint16* m_auFreeSlots;
-	uint16* m_auUsedSlots;
-	uint16* m_auSlots;
+	uint16	m_uNumFreeSlots;
+	
+	bool*	m_abSlots;
+	uint16	m_uFirstFreeSlot;
 };

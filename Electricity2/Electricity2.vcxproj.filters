@@ -467,6 +467,9 @@
     <ClCompile Include="VRAMPool.cpp">
       <Filter>Source Files\Rendering\PAR</Filter>
     </ClCompile>
+    <ClCompile Include="MemUtils.cpp">
+      <Filter>Source Files\Core\Memory</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="Electricity2.rc">
