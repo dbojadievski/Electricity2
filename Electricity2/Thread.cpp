@@ -107,7 +107,7 @@ CoreThread::Join( const uint64 uTime /*  = 0 */) noexcept
 {
 	PlatformThreadWaitResult threadWaitResult = PlatformThreadWaitResult::Invalid;
 	const bool bIsJoinable	= IsJoinable();
-	assert( bIsJoinable );
+	//assert( bIsJoinable );
 
 	uint32 uCurrThreadID	= GetCurrentThreadID();
 	if ( uCurrThreadID == m_PlatformThreadID ) // If we wait on ourselves to join, then a deadlock would occur.

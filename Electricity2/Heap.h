@@ -47,28 +47,28 @@ private:
 class HeapManager
 {
 public:
-	friend void* Electricity_Malloc( size_t cbSize
+	friend void* Electricity_Malloc( const uint32 cbSize
 #ifdef USE_MEMORY_TRACKING
 		, const char* szFile
-		, size_t nLineNo
+		, uint32 nLineNo
 #endif
 );
 	friend void Electricity_Free( void* pBuffer );
 
-	bool Initialize();
-	bool ShutDown();
+	static bool Initialize();
+	static bool ShutDown();
 
 	static bool HasAvailable( uint32 uSize ) noexcept;
 	static HeapNode* Allocate( const uint32 uSize
 #ifdef USE_MEMORY_TRACKING
-		, const char* szFile, size_t uLineNumber
+		, const char* szFile, const uint32 uLineNumber
 #endif
 		, byte* InitialContent = nullptr
 	) noexcept;
 	static void Release( HeapNode& Node ) noexcept;
 
 #ifdef USE_MEMORY_TRACKING
-	static void CheckForMemoryLeak();
+	static bool CheckForMemoryLeak();
 #endif
 private:
 	static HeapNode* FindFirstFit( const uint32 uSize ) noexcept;
@@ -94,9 +94,9 @@ private:
 	static std::map<byte*, HeapNode*> s_BufToNodeMap;
 };
 
-void* Electricity_Malloc( size_t cbSize
+void* Electricity_Malloc( uint32 cbSize
 #ifdef USE_MEMORY_TRACKING
-	, const char* szFile, size_t nLineNo 
+	, const char* szFile, uint32 nLineNo 
 #endif
 );
 
@@ -106,7 +106,7 @@ void Electricity_Free( void* pBuffer );
 	#define gcnew(type) Electricity_Malloc(sizeof(type), __FILE__, __LINE__)
 	#define gcalloc(uSize) Electricity_Malloc(uSize, __FILE__, __LINE__)
 #else
-	#define gcnew(type) Electricity_New(sizeof(type))
+	#define gcnew(type) Electricity_Malloc(sizeof(type))
 	#define gcalloc(uSize) Electricity_Malloc(uSize)
 #endif
 
@@ -140,7 +140,7 @@ void Electricity_Free( void* pBuffer );
 	(
 #ifdef USE_MEMORY_TRACKING
 		const char* szFile
-		, size_t uLineNumber
+		, int32 uLineNumber
 #endif
 	)
 	{
@@ -157,6 +157,7 @@ void Electricity_Free( void* pBuffer );
 		SharedPtr<Type> asShared( pType );
 		return asShared;
 	}
+
 
 #ifdef USE_MEMORY_TRACKING
 #define CreateObject(Type) __GCNew__<Type>(__FILE__, __LINE__)

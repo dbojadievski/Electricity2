@@ -24,6 +24,7 @@ protected:
 public:
 	virtual ~VRAMPool() noexcept;
 
+	virtual bool IsEmpty() const noexcept = 0;
 	virtual bool HasAvailable( const uint32 uSize, const VRAMAllocType eAllocType ) const noexcept = 0;
 
 	// Return offset in bytes from start of pool.
@@ -56,6 +57,7 @@ private:
 public:
 	virtual ~SingleResourceVRAMPool() noexcept;
 
+	virtual bool IsEmpty() const noexcept;
 	virtual bool HasAvailable( const uint32 uSize, const VRAMAllocType eAllocType ) const noexcept;
 	virtual VRAMHandle* Allocate( const uint32 uSize ) noexcept;
 	virtual bool Deallocate( VRAMHandle& outHandle ) noexcept;
@@ -83,6 +85,7 @@ private:
 public:
 	virtual ~BlockStorageVRAMPool() noexcept;
 
+	virtual bool IsEmpty() const noexcept;
 	virtual bool HasAvailable( const uint32 uSize, const VRAMAllocType eAllocType ) const noexcept;
 	virtual VRAMHandle* Allocate( const uint32 uSize ) noexcept;
 	virtual bool Deallocate( VRAMHandle& outHandle ) noexcept;
@@ -90,9 +93,17 @@ public:
 	virtual inline VRAMPoolType GetPoolType() noexcept { return VRAMPoolType::BlockStorageVRAMPool; }
 
 private:
+
+	uint16 CalcRequiredNumSlots( const uint32 uSize ) const noexcept;
+	void FindAvailableBlock( const uint32 uSize, uint16& uBlockIdx, bool& bIsAllocable ) const noexcept;
+
 	uint16	m_uNumSlots;
 	uint16	m_uNumFreeSlots;
 	
+	/// <summary>
+	/// Book-keeping on the individual blocks of VRAM.
+	/// False = free, True = taken.
+	/// </summary>
 	bool*	m_abSlots;
 	uint16	m_uFirstFreeSlot;
 };

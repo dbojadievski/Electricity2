@@ -44,7 +44,9 @@ private:
 	static ComPtr<ID3D12Resource1> CreateRenderTarget( const uint32 uWidth, const uint32 uHeight, const DXGI_FORMAT format, const D3D12_RESOURCE_DIMENSION dimension, const uint32 uSampleDesc, const uint32 uSampleQuality ) noexcept;
 	static ComPtr<ID3D12CommandAllocator> CreateCommandAllocator( D3D12_COMMAND_LIST_TYPE listType = D3D12_COMMAND_LIST_TYPE_DIRECT ) noexcept;
 	static ComPtr<ID3D12CommandList> CreateCommandList( ID3D12CommandAllocator* pAllocator, String name, D3D12_COMMAND_LIST_TYPE listType = D3D12_COMMAND_LIST_TYPE_DIRECT, uint32 uGPUNode = 0 ) noexcept;
-		
+	static ComPtr<ID3D12Resource> CreatePlacedResource( ID3D12Heap* pHeap, const uint64 uOffset, const D3D12_RESOURCE_DESC* pDesc, const D3D12_CLEAR_VALUE* pOptimizedClearValue ) noexcept;
+	static ComPtr<ID3D12Resource> CreateVertexBuffer(ID3D12Heap* pHeap, const uint64 uOffset, const uint32 uBufferSize) noexcept;
+
 	static HANDLE CreateEventHandle() noexcept;
 	static uint64 Signal( ID3D12CommandQueue* pQueue, ID3D12Fence1* pFence, uint64 uVal ) noexcept;
 	static void AwaitFenceValue( ID3D12Fence1* pFence, uint64 uVal, HANDLE event, uint64 uMilliseconds = 0xFFFFFFFFFFFFFFFF ) noexcept;

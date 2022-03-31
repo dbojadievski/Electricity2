@@ -88,7 +88,6 @@ namespace PlatformThread
 			}
 			default:
 			{
-				status = PlatformThreadWaitResult::Failed;
 				break;
 			}
 		}

@@ -20,19 +20,36 @@ namespace Electricity::Rendering
 		
 		Platform_Initialize();
 		
-		// Sample alloc as test.
-		constexpr uint64 uSize		= ToMegabytes( 8 );
-		VRAMHandle& xHandle			= VRAMManager::AllocateVRAM( uSize, VRAMAllocType::Default );
-		assert( xHandle.IsValid() );
+		TestSingleResourcePoolAlloc();
+		TestBlockResourcePoolAlloc();
 
-		bool bReleasedVRAM			= VRAMManager::ReleaseVRAM( xHandle );
-		assert( bReleasedVRAM );
-		
 		return 
 		(
 			bSwapChainInitialized
 			&& bMemManagerInitialized
 		);
+	}
+
+	void PAR::TestSingleResourcePoolAlloc() noexcept
+	{
+		// Sample alloc as test.
+		constexpr uint64 uSize = ToMegabytes( 8 );
+		VRAMHandle& xHandle = VRAMManager::AllocateVRAM( uSize, VRAMAllocType::Default );
+		assert( xHandle.IsValid() );
+
+		bool bReleasedVRAM = VRAMManager::ReleaseVRAM( xHandle );
+		assert( bReleasedVRAM );
+	}
+
+	void PAR::TestBlockResourcePoolAlloc() noexcept
+	{
+		// Sample alloc as test.
+
+		constexpr uint64 uSize = ToMegabytes( 9 );
+		VRAMHandle& xHandle = VRAMManager::AllocateVRAM( uSize, VRAMAllocType::Buffer );
+		assert( xHandle.IsValid() );
+
+		bool bReleasedVRAM = VRAMManager::ReleaseVRAM( xHandle );
 	}
 
 	void PAR::Update( uint32 uFrameDelta ) noexcept

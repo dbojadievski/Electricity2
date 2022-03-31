@@ -19,7 +19,7 @@ public:
 	~MemoryStreambuf()
 	{
 		m_uSize = 0;
-		delete[] m_pMem;
+		gcdelete(m_pMem);
 	}
 
 private:

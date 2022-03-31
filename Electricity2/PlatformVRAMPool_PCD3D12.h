@@ -7,10 +7,10 @@
 class PlatformVRAMPool
 {
 	friend class VRAMPool;
-	friend class SingleResourceVRAMPool;
+	friend class SingleResourceVRAfMPool;
 	friend class PCD3D12Rendering;
 public:
-	PlatformVRAMPool( uint32 uAllocSize = DEFAULT_VRAM_POOL_SIZE_PCD3D12 ) noexcept;
+	PlatformVRAMPool(uint32 uAllocSize = DEFAULT_VRAM_POOL_SIZE_PCD3D12) noexcept;
 	~PlatformVRAMPool() noexcept;
 	uint32 GetSize() const noexcept { return m_uHeapSize; }
 private:

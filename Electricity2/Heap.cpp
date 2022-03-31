@@ -5,14 +5,14 @@
 #include <mutex>
 
 using std::lock_guard;
+
 using std::recursive_mutex;
 using std::map;
 
 //#define DEBUG_MEM_HEAP
 // Heap node implementation.
 
-recursive_mutex Mutex;
-
+static recursive_mutex s_Mutex;
 inline uint32
 GetHeaderedSize( uint32 uSize )
 {
@@ -82,7 +82,6 @@ bool
 HeapManager::Initialize()
 {
 	bool bInitialized	 = false;
-
 	Platform::Memory::Initialize();
 
 	s_uMemAlignmentSize				= Platform::Memory::GetMinAllocSize();
@@ -106,25 +105,16 @@ HeapManager::ShutDown()
 	s_uMemAlignmentSize		= 0;
 
 #ifdef USE_MEMORY_TRACKING
-	CheckForMemoryLeak();
+	bIsShutDown				= CheckForMemoryLeak();
 #else
 	bIsShutDown				= true;
 #endif
-
-	// Give all memory back to the operating system.
-	// Both free and used memory is reserved by the OS for us.
-	// So, we need to release both!
-	while ( s_pUsedMemory )
-		s_pUsedMemory		= ReleasePage( *s_pUsedMemory );
-
-	while ( s_pFreeMemory )
-		s_pFreeMemory		= ReleasePage( *s_pFreeMemory );
-
+	
 	return bIsShutDown;
 }
 
 bool
-HeapManager::HasAvailable( uint32 uSize ) noexcept
+HeapManager::HasAvailable( const uint32 uSize ) noexcept
 {
 	const uint32 uTotalSize = GetTotalSize( uSize );
 	return ( uTotalSize <= uTotalSize );
@@ -133,12 +123,12 @@ HeapManager::HasAvailable( uint32 uSize ) noexcept
 HeapNode*
 HeapManager::Allocate( const uint32 uSize, 
 #ifdef USE_MEMORY_TRACKING
-	const char* szFile, size_t uLineNumber,
+	const char* szFile, const uint32 uLineNumber,
 	#endif
 	byte* InitialContent /* = nullptr */ 
 ) noexcept
 {
-	lock_guard<recursive_mutex> Lock( Mutex ); // Automatically releases mutex when out of scope.
+	lock_guard<recursive_mutex> Lock( s_Mutex ); // Automatically releases mutex when out of scope.
 
 	HeapNode* pNode = HeapManager::FindBestFit( uSize );
 	if ( !pNode )
@@ -153,7 +143,7 @@ HeapManager::Allocate( const uint32 uSize,
 		Untrack( pNode );
 
 		// Split node to the requested size, and keep the remainder.
-		const uint32 uExpectedSize = GetTotalSize( uSize );
+		const uint32 uExpectedSize	= GetTotalSize( uSize );
 
 		byte* pBuffer				= reinterpret_cast<byte *>( pNode );
 		uint32 uBufSize				= pNode->GetTotalSize();
@@ -161,7 +151,7 @@ HeapManager::Allocate( const uint32 uSize,
 		
 		HeapNode* pRequested		= ( HeapNode* ) pBuffer;
 #ifdef USE_MEMORY_TRACKING
-		pRequested->m_iLineNumber	= uLineNumber;
+		pRequested->m_iLineNumber	= static_cast<int32>(uLineNumber);
 		pRequested->m_pStrFilePath	= szFile;
 #endif
 		pRequested->m_uSize			= uSize;
@@ -206,7 +196,7 @@ HeapManager::Allocate( const uint32 uSize,
 	{
 #ifdef USE_MEMORY_TRACKING
 		pNode->m_pStrFilePath	= szFile;
-		pNode->m_iLineNumber	= uLineNumber;
+		pNode->m_iLineNumber	= static_cast<int32>(uLineNumber);
 #endif
 		MarkUsed( pNode  );
 	}
@@ -217,7 +207,7 @@ HeapManager::Allocate( const uint32 uSize,
 void
 HeapManager::Release( HeapNode& Node ) noexcept
 {
-	lock_guard<recursive_mutex> Lock( Mutex ); // Automatically releases mutex when out of scope.
+	lock_guard<recursive_mutex> Lock( s_Mutex ); // Automatically releases mutex when out of scope.
 	MarkFree( &Node );
 }
 
@@ -428,7 +418,7 @@ HeapManager::ReleasePage( HeapNode& Node )
 	// NOTE(Dino):
 	// Platform dealloc is designed to return the memory to the OS entirely.
 	// It should be entirely unavailable for writing to us afterwards.
-	// So, we have to clear the struct beforehand.
+	// So, we have to clear the struct beforehand for security reasons.
 	Node.m_uSize	= 0;
 	Node.m_pNext	= nullptr;
 	Node.m_Buffer	= nullptr;
@@ -440,7 +430,7 @@ HeapManager::ReleasePage( HeapNode& Node )
 }
 
 #ifdef USE_MEMORY_TRACKING
-void
+bool
 HeapManager::CheckForMemoryLeak()
 {
 	if ( s_pUsedMemory )
@@ -455,17 +445,18 @@ HeapManager::CheckForMemoryLeak()
 
 		throw strMessage.c_str();
 	}
+
+	return true;
 }
 
 #endif
 
 void* 
-Electricity_Malloc( const size_t cbSize 
-	#ifdef USE_MEMORY_TRACKING
-	,const char* szFile
-	, size_t nLineNo
-	#endif
- 
+Electricity_Malloc(const uint32 cbSize
+#ifdef USE_MEMORY_TRACKING
+	, const char* szFile
+	, uint32 nLineNo
+#endif
 )
 {
 	HeapNode *pNode = HeapManager::Allocate( cbSize
@@ -500,42 +491,4 @@ Electricity_Free( void* pBuffer )
 			HeapManager::s_BufToNodeMap.erase( pair );
 		}
 	}
-}
-
-void*
-operator new( decltype( sizeof( 0 ) ) n
-#ifdef USE_MEMORY_TRACKING
-	, const char* szFile
-	, size_t nLineNo
-#endif
-	)
-{
-	return Electricity_Malloc( n
-#ifdef USE_MEMORY_TRACKING
-		, szFile
-		, nLineNo
-#endif
-	);
-}
-
-void*
-operator new[]( decltype( sizeof( 0 ) ) n
-#ifdef USE_MEMORY_TRACKING
-	, const char* szFile
-	, size_t nLineNo
-#endif
-	)
-{
-	return Electricity_Malloc( n
-#ifdef USE_MEMORY_TRACKING
-		, szFile
-		, nLineNo
-#endif
-	);
-}
-
-void
-operator delete( void* pBuffer )
-{
-	Electricity_Free( pBuffer );
 }

@@ -12,7 +12,7 @@ namespace Electricity::Utils
 		uint32 uIdxTokenStart = 0;
 
 		bool bInToken = false;
-		uint32 uLength = sString.length();
+		uint32 uLength = static_cast<uint32>( sString.length() );
 		for ( uint32 uIdx = 0; uIdx < uLength; uIdx++ )
 		{
 			const char c = sString[ uIdx ];
@@ -45,7 +45,7 @@ namespace Electricity::Utils
 	String&
 	TrimFront( String& sString ) noexcept
 	{
-		uint32 uLen = sString.size();
+		uint32 uLen = static_cast<uint32>(sString.size());
 		char* pStr = sString.data();
 		uint32 uFirstNonString = -1;
 		for ( uint32 uIdx = 0; uIdx < uLen; uIdx++ )
@@ -68,10 +68,10 @@ namespace Electricity::Utils
 	String&
 	TrimBack( String& sString ) noexcept
 	{
-		uint32 uLen = sString.size();
+		uint32 uLen = static_cast<uint32>(sString.size());
 		char* pStr = sString.data();
 		uint32 uFirstNonString = -1;
-		for ( uint32 uIdx = sString.size(); uIdx > 0; uIdx-- )
+		for ( uint32 uIdx = uLen; uIdx > 0; uIdx-- )
 		{
 			if ( !iswspace( pStr[ uIdx ] ) )
 			{
@@ -112,7 +112,7 @@ namespace Electricity::Utils
 		int32 iSignMultiplier	= 1;
 		int32 iStartIdx			= 0;
 
-		const uint32 uLen		= sString.length();
+		const uint32 uLen		= static_cast<const uint32>( sString.length() );
 		if ( uLen > 0 )
 		{
 			if ( sString[ 0 ] == '-' )

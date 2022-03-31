@@ -9,8 +9,6 @@
 #include <vector>
 #include <set>
 
-#include "CoreObjectCodeGen.h"
-
 typedef uint64 ObjectID;
 
 class CoreObject;
@@ -25,7 +23,6 @@ typedef std::set<ClassID> ClassIDSet;
 
 class CoreObject
 {
-	INIT_CORE_OBJECT
 public:
 	class Initializer
 	{
@@ -37,9 +34,6 @@ protected:
 public:
 	CoreObject( const CoreObject& other ) noexcept;
 	CoreObject( CoreObject&& ) noexcept;
-
-	void RegisterInheritance() noexcept;
-	void RegisterInstance() noexcept;
 
 	virtual CoreObject& operator=( const CoreObject& other ) noexcept;
 	virtual CoreObject& operator=( CoreObject&& other ) noexcept;
@@ -54,24 +48,9 @@ public:
 	void Initialize( const Initializer& initializer ) noexcept;
 	virtual void Deinitialize() noexcept;
 
-	uint32 GetInheritanceChainDepth() noexcept;
-	template<typename Type> 
-	bool IsA() const noexcept
-	{
-		const ClassID uRequestedID = Type::GetClassId();
-		const auto& it = m_suInheritanceChain.find( uRequestedID );
-		return ( it != m_suInheritanceChain.end() );
-	}
-
-	static ConstObjectIterator GetInstances() noexcept;
-
 private:
 	void Construct() noexcept;
 
 protected:
 	ObjectID	m_uID;
-	ClassIDSet m_suInheritanceChain;
-
-private:
-	static inline ObjectArray s_apInstances;
 };

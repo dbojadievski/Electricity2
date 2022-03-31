@@ -1,30 +1,13 @@
 #include "CoreObject.h"
 
-void
-CoreObject::RegisterInheritance() noexcept
-{
-	ClassID uTypeId = CoreObject::GetClassId();
-	if ( m_suInheritanceChain.find( uTypeId ) == m_suInheritanceChain.end() )
-	{
-		m_suInheritanceChain.insert( uTypeId );
-	}
-}
-
-void
-CoreObject::RegisterInstance() noexcept
-{
-	CoreObject::s_apInstances.push_back( SharedPtr<CoreObject>(this) );
-}
 
 void
 CoreObject::Construct() noexcept
 {
-	RegisterInstance();
-	RegisterInheritance();
 }
 
 CoreObject::CoreObject () noexcept :
-	m_uID( ++s_NextID )
+	m_uID( 0 )
 {
 	Construct();
 }
@@ -66,13 +49,12 @@ CoreObject::operator==( const CoreObject& other ) const noexcept
 
 CoreObject::~CoreObject() noexcept
 {
-	s_apInstances.erase( std::find( s_apInstances.begin(), s_apInstances.end(), SharedPtr<CoreObject>(this) ) );
 }
 
 ClassID
 CoreObject::GetClass() const noexcept
 {
-	return s_ClassId;
+	return ClassID::NewUUID();
 }
 
 ObjectID
@@ -96,17 +78,4 @@ CoreObject::Initialize( const Initializer& Initializer ) noexcept
 void
 CoreObject::Deinitialize() noexcept
 {
-}
-
-uint32 
-CoreObject::GetInheritanceChainDepth()  noexcept
-{
-	assert( s_apInstances.size() > 0 );
-	return m_suInheritanceChain.size();
-}
-
-ConstObjectIterator
-CoreObject::GetInstances() noexcept
-{
-	return s_apInstances.cbegin();
 }

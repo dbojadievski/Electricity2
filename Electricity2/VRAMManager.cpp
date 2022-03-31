@@ -88,6 +88,7 @@ VRAMManager::ReleaseVRAM( VRAMHandle& outHandle ) noexcept
 		case VRAMPoolType::SingleResourceVRAMPool:
 		{
 			// Delete this pool, as it was created for a single resource.
+			// We'll assume the other pool types are reusable until metrics prove otherwise.
 			VRAMPool* pPrevPool = FindPrevVRAMPoolInChain( pPool );
 			if ( pPrevPool ) // Pool in the middle or at the end. Remove it from the list.
 				pPrevPool->m_pNext = pPool->m_pNext;
@@ -97,6 +98,7 @@ VRAMManager::ReleaseVRAM( VRAMHandle& outHandle ) noexcept
 				assert( false );
 			delete pPool;
 		}
+		break;
 	}
 
 	return bReleased;
@@ -108,6 +110,11 @@ VRAMManager::CreatePreferredVRAMPoolForType( const uint32 uSize, const VRAMAlloc
 	VRAMPool* pPool		= nullptr;
 	switch ( eType )
 	{
+		case VRAMAllocType::Buffer:
+		{
+			pPool		= new BlockStorageVRAMPool( uSize );
+			break;
+		}
 		case VRAMAllocType::Default:
 		{
 			pPool		= new SingleResourceVRAMPool( uSize );

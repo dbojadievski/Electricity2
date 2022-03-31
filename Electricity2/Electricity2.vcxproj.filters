@@ -234,9 +234,6 @@
     <ClInclude Include="CoreObject.h">
       <Filter>Header Files\Core</Filter>
     </ClInclude>
-    <ClInclude Include="CoreObjectCodeGen.h">
-      <Filter>Header Files\Core\ObjectUtils</Filter>
-    </ClInclude>
     <ClInclude Include="PlatformUtils.h">
       <Filter>Header Files\Platform</Filter>
     </ClInclude>
@@ -343,6 +340,21 @@
       <Filter>Header Files\Rendering\PAR</Filter>
     </ClInclude>
     <ClInclude Include="VRAMPool.h">
+      <Filter>Header Files\Rendering\PAR</Filter>
+    </ClInclude>
+    <ClInclude Include="StaticInit.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="VertexBuffer.h">
+      <Filter>Header Files\Rendering\PAR</Filter>
+    </ClInclude>
+    <ClInclude Include="VertexFormat.h">
+      <Filter>Header Files\Rendering\PAR\Formats</Filter>
+    </ClInclude>
+    <ClInclude Include="CommandList.h">
+      <Filter>Header Files\Rendering\PAR</Filter>
+    </ClInclude>
+    <ClInclude Include="Command.h">
       <Filter>Header Files\Rendering\PAR</Filter>
     </ClInclude>
   </ItemGroup>

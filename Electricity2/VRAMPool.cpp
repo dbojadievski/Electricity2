@@ -40,6 +40,12 @@ SingleResourceVRAMPool::~SingleResourceVRAMPool() noexcept
 }
 
 bool
+SingleResourceVRAMPool::IsEmpty() const noexcept
+{
+	return !m_bIsFilled;
+}
+
+bool
 SingleResourceVRAMPool::HasAvailable( const uint32 uSize, const VRAMAllocType eAllocType ) const noexcept
 {
 	const bool bHasAvailable	= ( m_bIsFilled && ( m_uVRAMSize >= uSize ) );
@@ -61,17 +67,25 @@ SingleResourceVRAMPool::Allocate( const uint32 uSize ) noexcept
 bool
 SingleResourceVRAMPool::Deallocate( VRAMHandle& outHandle ) noexcept
 {
+	outHandle.m_pPool = nullptr;
+	outHandle.m_uHandleVal = 0;
+	outHandle.m_uOffsetInPool = 0;
+	
 	m_bIsFilled = false;
+	
 	return true;
 }
 
 // class BlockStorageVRAMPool
 static constexpr uint32 s_uBlockSize = static_cast<uint32>( Electricity::Utils::Memory::ToMegabytes( 8 ) );
 
-uint64 AlignBlockSize( uint64 uSize, uint64 uGranularity = s_uBlockSize )
+uint32 AlignBlockSize( uint32 uSize, uint32 uGranularity = s_uBlockSize )
 {
-	//TODO(Dino)
-	return uSize;
+	const uint32 uNumRequiredBlocks = ( uSize / uGranularity )
+		+ ( ( ( uSize & uGranularity ) != 0 ) * 1 );
+
+	const uint32 uRequiredSize = ( uGranularity * uNumRequiredBlocks );
+	return uRequiredSize;
 }
 
 BlockStorageVRAMPool::BlockStorageVRAMPool( uint32 uSize ) noexcept : 
@@ -84,8 +98,10 @@ BlockStorageVRAMPool::BlockStorageVRAMPool( uint32 uSize ) noexcept :
 	// Platform VRAM pool allocation is handled by parent class.
 	// All we have to do is organize the book-keeping.
 	
-	uint32 uAllocSize	= Electricity::Math::Min( uSize, s_uBlockSize );
-	m_uVRAMSize			= uSize; // TODO(Dino): Align size?
+	//uint32 uAllocSize	= Electricity::Math::Min( uSize, s_uBlockSize );
+	//uAllocSize = static_cast<uint32>( AlignBlockSize( uSize, s_uBlockSize ) );
+	uint32 uAllocSize = AlignBlockSize( uSize, s_uBlockSize );
+	m_uVRAMSize			= uAllocSize;
 	m_uVRAMGranularity	= s_uBlockSize;
 
 	m_uNumSlots			= ( m_uVRAMSize / m_uVRAMGranularity );
@@ -109,6 +125,12 @@ BlockStorageVRAMPool::~BlockStorageVRAMPool() noexcept
 }
 
 bool
+BlockStorageVRAMPool::IsEmpty() const noexcept
+{
+	return ( m_uNumSlots == m_uNumFreeSlots );
+}
+
+bool
 BlockStorageVRAMPool::HasAvailable( const uint32 uSize, const VRAMAllocType eAllocType ) const noexcept
 {
 	bool bSupportsAllocType		= false;
@@ -116,60 +138,145 @@ BlockStorageVRAMPool::HasAvailable( const uint32 uSize, const VRAMAllocType eAll
 	
 	switch ( eAllocType )
 	{
-		case VRAMAllocType::Default:
+		case VRAMAllocType::Buffer:
+		{
 			bSupportsAllocType	= true;
+		}
+		break;
+
+		case VRAMAllocType::Default:
+		{
+			bSupportsAllocType	= true;
+		}
+		break;
 	}
 
 	if ( bSupportsAllocType )
 	{
-		const uint16 uNumRequiredSlots	= ( uSize / m_uVRAMGranularity );
-		if ( uNumRequiredSlots <= m_uNumFreeSlots )
-		{
-			// Walk slots and find one which may contain the resource.
-			const uint16 uLastViableSlot	= ( m_uNumSlots - uNumRequiredSlots );
-			for ( uint16 uSlotIdx			= m_uFirstFreeSlot; uSlotIdx < uLastViableSlot; uSlotIdx++ )
-			{
-				if ( !m_abSlots[ uSlotIdx ] ) // Is slot available?
-				{
-					bool bAllocPossible		= true;
-					for ( uint16 uIdx		= 0; uIdx < uNumRequiredSlots; uIdx++ )
-					{
-						const uint16 uOffsetSlot		= ( uSlotIdx + uIdx );
-						if ( m_abSlots[ uOffsetSlot ] )
-						{
-							// At least one slot in the range is taken. We can't place our allocation here.
-							// Let's skip to the next slot.
-							bAllocPossible				= false;
-							const uint16 uNextSlotIdx	= ( uOffsetSlot + 1 );
-							uSlotIdx					= Electricity::Math::Min( uLastViableSlot, uNextSlotIdx );
-							break;
-						}
-					}
-
-					// If we found a free slot-range, then we can allocate the memory.
-					if ( bAllocPossible )
-					{
-						bHasSlotRange					= true;
-						break;
-					}
-				}
-			}
-		}
-		
+		uint16 uBlockIdx;
+		FindAvailableBlock( uSize, uBlockIdx, bHasSlotRange );
 	}
 
-	const bool bCanAlloc = ( bSupportsAllocType && bHasSlotRange );
+	const bool bCanAlloc		= ( bSupportsAllocType && bHasSlotRange );
 	return bCanAlloc;
 }
 
 VRAMHandle *
 BlockStorageVRAMPool::Allocate( const uint32 uSize ) noexcept
 {
-	return nullptr;
+	VRAMHandle* pHandle			= new VRAMHandle();
+
+	uint16 uStartSlotIdx;
+	bool bHasSlotRange;
+
+	FindAvailableBlock( uSize, uStartSlotIdx, bHasSlotRange );
+	if ( bHasSlotRange )
+	{
+		const uint32 uNumSlotsRequired = CalcRequiredNumSlots( uSize );
+		
+		pHandle->m_pPool		 = this;
+		pHandle->m_uOffsetInPool = uStartSlotIdx;
+		pHandle->m_uHandleVal	 = uNumSlotsRequired;
+
+		m_uNumFreeSlots			 -= uNumSlotsRequired;
+		
+		// Set up the next 'first free slot'.
+		const uint16 uLastUsedSlotIdx = ( uStartSlotIdx + uNumSlotsRequired );
+		for ( uint16 uSlotIdx = uStartSlotIdx; uSlotIdx < uLastUsedSlotIdx; uSlotIdx++ )
+		{
+			m_abSlots [ uSlotIdx ] = true;
+		}
+
+		if ( m_uNumFreeSlots )
+		{
+			for ( uint16 uSlotIdx = ( uLastUsedSlotIdx + 1 ); uSlotIdx < m_uNumSlots; uSlotIdx++ )
+			{
+				if ( !m_abSlots [ uSlotIdx ] )
+				{
+					m_uFirstFreeSlot = uSlotIdx;
+					break;
+				}
+			}
+		}
+	}
+
+	return pHandle;
 }
 
 bool
 BlockStorageVRAMPool::Deallocate( VRAMHandle& outHandle ) noexcept
 {
-	return false;
+	assert( outHandle.m_pPool == this );
+
+	m_uNumFreeSlots += outHandle.m_uHandleVal;
+	const uint16 uLastUsedSlotIdx = ( outHandle.m_uOffsetInPool + outHandle.m_uHandleVal );
+	
+	for ( uint16 uSlotIdx = outHandle.m_uOffsetInPool; uSlotIdx < uLastUsedSlotIdx; uSlotIdx++ )
+	{
+		m_abSlots [ uSlotIdx ] = false;
+	}
+
+	m_uFirstFreeSlot = Electricity::Math::Min( m_uFirstFreeSlot, (uint16) outHandle.m_uOffsetInPool );
+
+	outHandle.m_pPool = nullptr;
+	outHandle.m_uHandleVal = 0;
+	outHandle.m_uOffsetInPool = 0;
+	
+	return true;
+}
+
+uint16
+BlockStorageVRAMPool::CalcRequiredNumSlots( const uint32 uSize ) const noexcept
+{
+	const uint16 uNumRequiredSlots = ( uSize / m_uVRAMGranularity )
+		+ ( ( ( uSize % m_uVRAMGranularity ) > 0 ) * 1 );
+
+	return uNumRequiredSlots;
+}
+
+void
+BlockStorageVRAMPool::FindAvailableBlock( const uint32 uSize, uint16& uBlockIdx, bool& bIsAllocable ) const noexcept
+{
+	bool bHasSlotRange = false;
+
+	uBlockIdx = 0;
+	bIsAllocable = false;
+
+	uint16 uSlotIdx;
+	const uint16 uNumRequiredSlots = CalcRequiredNumSlots( uSize );
+	if ( uNumRequiredSlots <= m_uNumFreeSlots)
+	{
+		// Walk slots and find one which may contain the resource.
+		const uint16 uLastViableSlot = ( m_uNumSlots - uNumRequiredSlots );
+		for ( uSlotIdx = m_uFirstFreeSlot; uSlotIdx <= uLastViableSlot; uSlotIdx++ )
+		{
+			if ( !m_abSlots[ uSlotIdx ] ) // Is slot available?
+			{
+				bool bAllocPossible = true;
+				for ( uint16 uIdx = 0; uIdx < uNumRequiredSlots; uIdx++ )
+				{
+					const uint16 uOffsetSlot = ( uSlotIdx + uIdx );
+					if ( m_abSlots[uOffsetSlot] )
+					{
+						// At least one slot in the range is taken. We can't place our allocation here.
+						// Let's skip to the next slot.
+						bAllocPossible = false;
+						const uint16 uNextSlotIdx = ( uOffsetSlot + 1 );
+						uSlotIdx = Electricity::Math::Min( uLastViableSlot, uNextSlotIdx );
+						break;
+					}
+				}
+
+				// If we found a free slot-range, then we can allocate the memory.
+				if ( bAllocPossible )
+				{
+					bHasSlotRange = true;
+					bIsAllocable = true;
+					uBlockIdx = uSlotIdx;
+
+					break;
+				}
+			}
+		}
+	}
 }

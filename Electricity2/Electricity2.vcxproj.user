@@ -8,6 +8,8 @@
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <LocalDebuggerDebuggerType>NativeOnly</LocalDebuggerDebuggerType>
+    <LocalDebuggerWorkingDirectory>$(SolutionDir)\Assets</LocalDebuggerWorkingDirectory>
+    <DebuggerFlavor>WindowsLocalDebugger</DebuggerFlavor>
   </PropertyGroup>
   <PropertyGroup>
     <ShowAllFiles>false</ShowAllFiles>

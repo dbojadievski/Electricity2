@@ -6,7 +6,6 @@ namespace Electricity::Rendering
 	class SwapChain
 	{
 	public:
-
 		static bool Initialize() noexcept;
 		static void Update() noexcept;
 		static bool ShutDown() noexcept;

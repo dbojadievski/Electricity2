@@ -101,4 +101,7 @@ SettingsSystem::ParseResolutionFromCmdLine() noexcept
 	return bParsed;
 }
 
-INIT_CLASS_BODY( SettingsSystem )
+SettingsSystem::SettingsSystem(OBJ_CONSTRUCTOR_PARAMS)
+{
+
+}

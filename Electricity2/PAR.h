@@ -16,5 +16,8 @@ namespace Electricity::Rendering
 	private:
 		static void Platform_Initialize() noexcept;
 		static void Platform_Update( uint32 uFrameDelta ) noexcept;
+		
+		static void TestSingleResourcePoolAlloc() noexcept;
+		static void TestBlockResourcePoolAlloc() noexcept;
 	};
 }

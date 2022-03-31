@@ -8,7 +8,6 @@
 
 class SettingsSystem final : public CoreSystem
 {
-	INIT_CLASS(SettingsSystem)
 public:
 	virtual bool Initialize() noexcept;
 	virtual void Deinitialize() noexcept;
@@ -19,6 +18,8 @@ public:
 	const DisplaySettings& GetDisplaySettings() const noexcept;
 	uint64 GetMemorySizeInMegabytes() const noexcept;
 	uint32 GetHardwareThreadCount() const noexcept;
+
+	SettingsSystem(OBJ_CONSTRUCTOR_PARAMS);
 private:
 	bool ParseResolutionFromCmdLine() noexcept;
 

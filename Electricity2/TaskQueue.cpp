@@ -190,7 +190,7 @@ void
 TaskQueue::Initialize() noexcept
 {
 	unique_lock<recursive_mutex> guard( g_Mutex );
-	s_uNumWorkers = CoreThread::GetLogicalThreadCount();
+	s_uNumWorkers = CoreThread::GetLogicalThreadCount() - 1;
 	CoreThreadStart threadStart( &WorkerThreadFunc, true );
 	s_pWorkers = new CoreThread[ s_uNumWorkers ];
 	for ( uint32 uWorkerIdx = 0; uWorkerIdx < s_uNumWorkers; uWorkerIdx++ )
@@ -211,9 +211,7 @@ TaskQueue::Deinitialize() noexcept
 	}
 
 	for ( PackagedTask* pPackagedTask : s_UnsubmittedTasks )
-	{
 		delete pPackagedTask;
-	}
 
 	delete[] s_pWorkers;
 }
@@ -223,14 +221,16 @@ TaskQueue::SubmitTask( PackagedTask* pTask ) noexcept
 {
 	unique_lock<recursive_mutex> guard( g_Mutex );
 	const auto& it = std::find( s_UnsubmittedTasks.begin(), s_UnsubmittedTasks.end(), pTask );
-	if ( it != s_UnsubmittedTasks.end() && pTask->m_TaskState == TaskState::Invalid )
+	if (it != s_UnsubmittedTasks.end() && pTask->m_TaskState == TaskState::Invalid)
 	{
 		pTask->m_TaskState = TaskState::Scheduled;
 
-		if ( pTask->m_pfnOnSubmitHandler )
+		if (pTask->m_pfnOnSubmitHandler)
 			pTask->m_pfnOnSubmitHandler();
 
-		s_UnsubmittedTasks.erase( it );
-		s_Tasks.push( pTask );
+		s_UnsubmittedTasks.erase(it);
+		s_Tasks.push(pTask);
 	}
+	else
+		assert("Task already in task list.");
 }

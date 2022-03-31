@@ -36,7 +36,6 @@
 #include <fstream>
 #define MAX_LOADSTRING 100
 
-HeapManager Manager;
 App* pApp = nullptr;
 
 LPSTR pCmdLine = nullptr;
@@ -44,18 +43,12 @@ LPSTR pCmdLine = nullptr;
 void 
 InitializeSystems()
 {
-    const bool bIsInitted = Manager.Initialize();
-    assert( bIsInitted );
-
     TaskQueue::Initialize();
 }
 
 void 
 ShutDownSystems()
 {
-    const bool bIsShutDown = Manager.ShutDown();
-    assert( bIsShutDown );
-
     TaskQueue::Deinitialize();
 }
 
@@ -234,13 +227,6 @@ LoadSampleSimpleMesh()
 		SerializationSystem::Deserialize( "triangle.mesh" );
 		const auto& meshes      = SimpleMeshLoader::GetMeshes();
 		assert( meshes.size() == 1 );
-
-		//SerializationSystem::Deserialize( "quad.mesh" );
-		//assert( meshes.size() == 2 );
-		//const SharedPtr<SimpleMesh> pMeshQuad = meshes[ 1 ];
-		//const String exportPathQuad     = "quad_export.dat";
-		//const SimpleMesh& quadMesh      = *pMeshQuad.Get();
-		//SerializationSystem::Serialize( quadMesh, exportPathQuad );
     }) );
 
     g_pTaskSerializeTri = PackagedTask::Create( ( [] ( TaskParam pParam, const bool& bShouldCancel ) 
@@ -257,7 +243,6 @@ LoadSampleSimpleMesh()
     g_pTaskSerializeTri->SetOnCompleteOrCancelledHandler( &ClearTasks );
     g_pTaskDeserializeTri->SetFollowUpTask( g_pTaskSerializeTri );
     g_pTaskDeserializeTri->Submit();
-    g_pTaskSerializeTri->Await();
 }
 
 // Global Variables:
@@ -279,21 +264,8 @@ int APIENTRY WinMain(_In_ HINSTANCE hInstance,
     UNREFERENCED_PARAMETER(lpCmdLine);
     pCmdLine = lpCmdLine;
 
-    // TODO: Place code here.
     InitializeSystems();
-
-#ifdef _DEBUG
-    //UnitTestManager::GetInstance().RunAllUnitTests();
-    //UnitTest_CmdLineParser ParserTest;
-    //assert(ParserTest());
-    //RunThreadTest();
-    //RunFiberTest();
-    //ConsoleSystemTest();
-    LoadSampleSimpleMesh();
-#endif
     
-    // Can we do futures in our version of C++?
-
     // Initialize global strings
     LoadStringW(hInstance, IDS_APP_TITLE, szTitle, MAX_LOADSTRING);
     LoadStringW(hInstance, IDC_ELECTRICITY2, szWindowClass, MAX_LOADSTRING);
@@ -322,7 +294,6 @@ int APIENTRY WinMain(_In_ HINSTANCE hInstance,
         g_pEngine->Update();
     }
 
-    ShutDownSystems();
     return (int) msg.wParam;
 }
 
@@ -421,13 +392,14 @@ BOOL InitInstance(HINSTANCE hInstance, int nCmdShow)
 
 
    App* pApp = new App( hWnd, cmdLineString );
-   g_pApp = SharedPtr<App>( pApp );
+   g_pApp = pApp;
 
    CoreEngine* pEngine = new CoreEngine();
    g_pEngine = SharedPtr<CoreEngine>( pEngine );
 
 
    g_pEngine->Initialize( cmdLineString );
+   LoadSampleSimpleMesh();
 
 
    ShowWindow(hWnd, nCmdShow);
@@ -458,7 +430,6 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
         }
         break;
     case WM_DESTROY:
-        g_pEngine->ShutDown();
         PostQuitMessage(0);
         break;
     default:

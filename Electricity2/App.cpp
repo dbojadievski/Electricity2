@@ -1,7 +1,8 @@
 #include "App.h"
 #include <assert.h>
 
-SharedPtr<App> g_pApp = nullptr;
+#include "Heap.h"
+App * g_pApp = nullptr;
 
 App::App( PPlatformWindow platformWindow, const String& cmdLineArgs ) noexcept :
 	m_PlatformWindow( platformWindow )

@@ -1,0 +1,55 @@
+﻿  App.cpp
+  ChunkHeader.cpp
+  CommandLineParser.cpp
+  ConsoleSystem.cpp
+  CoreEngine.cpp
+  CoreObject.cpp
+  CoreSystem.cpp
+  CoreTimer.cpp
+  D3D12Rendering.cpp
+  DisplaySettings.cpp
+  pch.cpp
+  Electricity2.cpp
+  Fiber.cpp
+  FiberStart.cpp
+  Heap.cpp
+C:\Users\dboja\source\Electricity2\Electricity2\Heap.cpp(474,2): warning C4267: 'argument': conversion from 'size_t' to 'const uint32', possible loss of data
+  MemUtils.cpp
+  PAR.cpp
+  PlatformAppDefines_Windows.cpp
+  PlatformDisplaySettings_Windows.cpp
+  PlatformFiber_Windows.cpp
+  Compiling...
+  PlatformMemory_Windows.cpp
+  PlatformSwapChain_D3D12.cpp
+  PlatformThreadingDefines_Windows.cpp
+  PlatformThread_Windows.cpp
+  PlatformTime_Windows.cpp
+  PlatformUtils_Windows.cpp
+  PlatformVRAMPool_PCD3D12.cpp
+  SerializationSystem.cpp
+  SettingsSystem.cpp
+  SimpleMeshLoader.cpp
+  StringUtils.cpp
+C:\Users\dboja\source\Electricity2\Electricity2\StringUtils.cpp(15,36): warning C4267: 'initializing': conversion from 'size_t' to 'uint32', possible loss of data
+C:\Users\dboja\source\Electricity2\Electricity2\StringUtils.cpp(48,31): warning C4267: 'initializing': conversion from 'size_t' to 'uint32', possible loss of data
+C:\Users\dboja\source\Electricity2\Electricity2\StringUtils.cpp(71,31): warning C4267: 'initializing': conversion from 'size_t' to 'uint32', possible loss of data
+C:\Users\dboja\source\Electricity2\Electricity2\StringUtils.cpp(74,3): warning C4267: 'initializing': conversion from 'size_t' to 'uint32', possible loss of data
+C:\Users\dboja\source\Electricity2\Electricity2\StringUtils.cpp(115,40): warning C4267: 'initializing': conversion from 'size_t' to 'uint32', possible loss of data
+C:\Users\dboja\source\Electricity2\Electricity2\StringUtils.cpp(115,40): warning C4267: 'initializing': conversion from 'size_t' to 'const uint32', possible loss of data
+  SwapChain.cpp
+  TaskQueue.cpp
+  Thread.cpp
+  ThreadStart.cpp
+  UnitTests.cpp
+  UUID.cpp
+  Vertex.cpp
+  VRAMHandle.cpp
+  VRAMManager.cpp
+  Compiling...
+  VRAMPool.cpp
+  Generating code
+  Previous IPDB not found, fall back to full compilation.
+  All 1624 functions were compiled because no usable IPDB/IOBJ from previous compilation was found.
+  Finished generating code
+  Electricity2.vcxproj -> C:\Users\dboja\source\Electricity2\x64\Release\Electricity2.exe

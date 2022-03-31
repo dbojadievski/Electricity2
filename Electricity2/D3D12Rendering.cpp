@@ -10,6 +10,7 @@
 #include <stdio.h>
 #include <iostream>
 #include "d3dx12.h"
+#include "Heap.h"
 
 #pragma comment(lib, "windowscodecs.lib")
 #pragma comment(lib, "dxgi.lib") 
@@ -37,7 +38,7 @@ PCD3D12Rendering::Initialize() noexcept
 	InitializeDevice();
 	InitCommandQueue();
 		
-	s_pSwapChain = new PCD3D12SwapChain( s_uNumFrames, g_pApp->GetPlatformWindow(), 2560, 1440, "Main Swap Chain" );
+	s_pSwapChain = new PCD3D12SwapChain(s_uNumFrames, g_pApp->GetPlatformWindow(), 2560, 1440, "Main Swap Chain");
 	s_uFrameIndex = s_pSwapChain->GetCurrentIndex();
 			
 	s_pRTVDescriptorHeap = CreateDescriptorHeap( D3D12_DESCRIPTOR_HEAP_TYPE_RTV, s_uNumFrames, true );
@@ -61,6 +62,7 @@ PCD3D12Rendering::Initialize() noexcept
 	s_uFrameFenceValues[ s_uFrameIndex ]++;
 
 	FlushQueue( s_pCommandQueue.Get(), s_pFence.Get() );
+
 	return true;
 }
 
@@ -232,7 +234,6 @@ PCD3D12Rendering::InitCommandQueue() noexcept
 	if ( hResult != S_OK )
 	{
 		HRESULT res = s_pDevice->GetDeviceRemovedReason();
-		assert( res );
 	}
 		
 	assert( hResult == S_OK );
@@ -350,6 +351,43 @@ PCD3D12Rendering::CreateCommandList( ID3D12CommandAllocator* pAllocator, String 
 	}
 
 	return pList;
+}
+
+ComPtr<ID3D12Resource>
+PCD3D12Rendering::CreatePlacedResource(ID3D12Heap* pHeap, const uint64 uOffset, const D3D12_RESOURCE_DESC* pDesc, const D3D12_CLEAR_VALUE* pOptimizedClearValue) noexcept
+{
+	return nullptr;
+}
+
+ComPtr<ID3D12Resource>
+PCD3D12Rendering::CreateVertexBuffer(ID3D12Heap* pHeap, const uint64 uOffset, const uint32 uSize) noexcept
+{
+	assert( pHeap );
+	assert( uSize );
+
+	ComPtr<ID3D12Resource> pResource = nullptr;
+	
+	D3D12_RESOURCE_DESC desc = {};
+	
+	desc.Width				= uSize;
+	desc.Height				= 1;
+	desc.Alignment			= D3D12_DEFAULT_RESOURCE_PLACEMENT_ALIGNMENT;
+	desc.DepthOrArraySize	= 1;
+	desc.Format				= DXGI_FORMAT_UNKNOWN;
+	
+	desc.SampleDesc.Count	= 1;
+	desc.SampleDesc.Quality = 0;
+
+	desc.Layout				= D3D12_TEXTURE_LAYOUT_ROW_MAJOR;
+	desc.Flags				= D3D12_RESOURCE_FLAG_NONE;
+	const HRESULT hRes		= s_pDevice->CreatePlacedResource(pHeap, uOffset, &desc, D3D12_RESOURCE_STATE_VERTEX_AND_CONSTANT_BUFFER, nullptr, __uuidof(ID3D12Resource), &pResource);
+	
+	const bool bSucceeded	= SUCCEEDED(hRes);
+	assert(bSucceeded);
+	if (!bSucceeded)
+		pResource = nullptr;
+	
+	return pResource;
 }
 
 ComPtr<ID3D12Fence1>

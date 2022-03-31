@@ -41,15 +41,10 @@ CoreEngine::GetSettingsSystem() noexcept
 void
 CoreEngine::Initialize( const StringView& sCmdLine ) noexcept
 {
+	HeapManager::Initialize();
 	m_pSettingsSystem = CreateObject(SettingsSystem);
 	assert( m_pSettingsSystem.IsValid() );
 
-	const uint32 uNumClassIds	= m_pSettingsSystem->GetInheritanceChainDepth();
-	assert( uNumClassIds == 3 );
-
-	const auto ID = CoreSystem::GetClassId();
-	const bool bIsCoreSystem	= m_pSettingsSystem->IsA<CoreSystem>();
-	assert( bIsCoreSystem );
 	m_pSettingsSystem->Initialize();
 
 	TaskQueue::Initialize();
@@ -63,7 +58,7 @@ CoreEngine::ShutDown() noexcept
 	TaskQueue::Deinitialize();
 	m_pSettingsSystem->Deinitialize();
 	m_pSettingsSystem.RemoveRef();
-
+	HeapManager::ShutDown();
 	m_uPrevFrameTime = 0;
 }
 

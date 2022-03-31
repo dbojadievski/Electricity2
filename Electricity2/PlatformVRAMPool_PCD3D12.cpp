@@ -1,5 +1,5 @@
 #ifdef PAR_PLATFORM_PCD3D12
-#include "PlatformVRAMPool.h"
+#include "PlatformVRAMPool_PCD3D12.h"
 
 PlatformVRAMPool::PlatformVRAMPool( uint32 uAllocSize ) noexcept :
 	m_uHeapSize( 0 )

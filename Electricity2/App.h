@@ -1,4 +1,5 @@
 #pragma once
+#include "StaticInit.h"
 #include "CoreTypes.h"
 #include "PlatformAppDefines.h"
 #include "SharedPtr.h"
@@ -23,4 +24,4 @@ private:
 	PPlatformWindow m_PlatformWindow;
 };
 
-extern SharedPtr<App> g_pApp;
+extern App* g_pApp;

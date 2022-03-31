@@ -1,12 +1,3 @@
-﻿  Electricity2.cpp
-  Fiber.cpp
-  FiberStart.cpp
-  Heap.cpp
-  PlatformFiber_Windows.cpp
-  PlatformMemory_Windows.cpp
-  PlatformThreadingDefines_Windows.cpp
-  PlatformThread_Windows.cpp
-  Thread.cpp
-  ThreadStart.cpp
-  UnitTests.cpp
-LINK : fatal error LNK1104: cannot open file 'x64\Debug\Electricity2.obj'
+﻿cl : command line warning D9007: '/C' requires '/E, /EP or /P'; option ignored
+  VRAMPool.cpp
+  Electricity2.vcxproj -> C:\Users\dboja\source\Electricity2\x64\Debug\Electricity.exe

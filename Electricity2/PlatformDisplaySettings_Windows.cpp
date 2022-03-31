@@ -16,7 +16,6 @@ Platform::Settings::Display::GetMonitorDisplayResolution( uint32& uWidth, uint32
 	MONITORINFO info	= {};
 	info.cbSize			= sizeof( info );
 	const bool bGot		= GetMonitorInfo( hMonitor, &info) ;
-	assert( bGot);
 	if ( bGot )
 	{
 		uWidth			= ( info.rcMonitor.right - info.rcMonitor.left );

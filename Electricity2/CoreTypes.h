@@ -2,6 +2,7 @@
 
 #include <stdint.h>
 #include <string>
+#include <string_view>
 
 typedef int8_t int8;
 typedef int8 sbyte;
