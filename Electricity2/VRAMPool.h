@@ -4,12 +4,11 @@
 // forward declarations
 class PlatformVRAMPool;
 class VRAMHandle;
-
 enum class VRAMAllocType;
 
 enum class VRAMPoolType
 {
-	  VRAMPool					= 0
+		VRAMPool					= 0
 	, SingleResourceVRAMPool	= 1
 	, BlockStorageVRAMPool		= 2
 };
@@ -26,6 +25,7 @@ public:
 
 	virtual bool IsEmpty() const noexcept = 0;
 	virtual bool HasAvailable( const uint32 uSize, const VRAMAllocType eAllocType ) const noexcept = 0;
+	PlatformVRAMPool* GetPlatformHandle() const noexcept { return m_pVRAMPool; }
 
 	// Return offset in bytes from start of pool.
 	virtual VRAMHandle* Allocate( const uint32 uSize ) noexcept = 0;

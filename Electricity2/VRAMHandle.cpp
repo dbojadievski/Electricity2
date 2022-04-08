@@ -9,7 +9,7 @@
 
 // Class VRAMHandle
 VRAMHandle::VRAMHandle() noexcept :
-	  m_uHandleVal( 0 )
+		m_uHandleVal( 0 )
 	, m_uOffsetInPool( 0 )
 	, m_pPool( nullptr )
 {

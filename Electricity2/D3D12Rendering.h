@@ -12,11 +12,17 @@
 
 #include <chrono>
 #include "PAR.h"
-
+#include "RenderTargetHandle.h"
+#include "RenderTarget.h"
+#include "VRAMHandle.h"
+#include "VRAMHandle.h"
+#include "CoreContainers.h"
 using namespace Microsoft::WRL;
 
 class PCD3D12SwapChain;
 class PlatformVRAMPool;
+
+typedef ComPtr<ID3D12Resource1> PPlatformRenderTarget;
 
 class PCD3D12Rendering
 {
@@ -30,6 +36,8 @@ public:
 	static bool IsVariableRefreshRateSupported() noexcept;
 	static ID3D12CommandQueue* GetImmediateQueue() noexcept;
 	static ComPtr<ID3D12Fence1> CreateFence( uint64 uVal = 0 ) noexcept;
+	static uint64 CreateRenderTarget( const Electricity::Rendering::RenderTarget& xTarget ) noexcept;
+	static void DeleteRenderTarget( const Electricity::Rendering::RenderTargetHandle& xTarget ) noexcept;
 private:
 	static const uint32 s_uNumFrames = 2;
 
@@ -54,6 +62,8 @@ private:
 
 	static void UpdateRenderTargetViews( ComPtr<ID3D12Device2> pDevice, ComPtr<IDXGISwapChain4> pSwapChain, ComPtr<ID3D12DescriptorHeap> pHeap ) noexcept;
 
+	static DXGI_FORMAT TranslateRenderTargetFormat( const Electricity::Rendering::RenderTargetFormat& xFormat ) noexcept;
+
 	static inline ComPtr<IDXGIAdapter4> s_pAdapter;
 	static inline ComPtr<ID3D12Device2> s_pDevice;
 	static inline ComPtr<ID3D12CommandQueue> s_pCommandQueue;
@@ -75,5 +85,8 @@ private:
 	static inline HANDLE s_hFenceEvent;
 
 	static inline FLOAT s_aClearColor[4] = { 0.4f, 0.6f, 0.9f, 1.0f };
+
+	// Collections of platform-specific rendering objects.
+	inline static Map<const Electricity::Rendering::RenderTargetHandle, PPlatformRenderTarget> s_xRenderTargetMap;
 };
 #endif

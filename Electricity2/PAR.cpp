@@ -6,8 +6,9 @@
 //#include "Platform_Ren"
 #include "MemUtils.h"
 #include "SwapChain.h"
-#include "VRAMManager.h"
 #include "VRAMHandle.h"
+#include "VRAMManager.h"
+#include "RenderTargetManager.h"
 
 using namespace Electricity::Utils::Memory;
 namespace Electricity::Rendering
@@ -19,6 +20,7 @@ namespace Electricity::Rendering
 		const bool bMemManagerInitialized	= VRAMManager::Initialize();
 		
 		Platform_Initialize();
+		RenderTargetManager::Initialize();
 		
 		TestSingleResourcePoolAlloc();
 		TestBlockResourcePoolAlloc();
@@ -54,6 +56,7 @@ namespace Electricity::Rendering
 
 	void PAR::Update( uint32 uFrameDelta ) noexcept
 	{
+		RenderTargetManager::Update();
 		Platform_Update( uFrameDelta );
 	}
 

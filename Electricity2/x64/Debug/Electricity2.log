@@ -1,3 +1,5 @@
 ﻿cl : command line warning D9007: '/C' requires '/E, /EP or /P'; option ignored
+  D3D12Rendering.cpp
   VRAMPool.cpp
+  Generating Code...
   Electricity2.vcxproj -> C:\Users\dboja\source\Electricity2\x64\Debug\Electricity.exe

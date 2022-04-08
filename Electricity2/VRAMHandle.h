@@ -1,10 +1,13 @@
 #pragma once
 #include "CoreTypes.h"
+#include "VRAMManager.h"
+#include "VRAMPool.h"
 
 enum class VRAMAllocType
 {
-	Default = 0,
-	Buffer	= 1
+	Default			= 0,
+	Buffer			= 1,
+	RenderTarget	= 2
 };
 
 // forward declarations
@@ -33,6 +36,10 @@ public:
 
 	bool operator== ( const VRAMHandle& other ) const noexcept { return m_uHandleVal == other.m_uHandleVal; }
 	bool operator!= ( const VRAMHandle& other ) const noexcept { return m_uHandleVal != other.m_uHandleVal; }
+
+	const uint32 GetHandleValue() const noexcept { return m_uHandleVal; }
+	const uint32 GetOffset() const noexcept { return m_uOffsetInPool; }
+	const VRAMPool* GetPool() const noexcept { return m_pPool; }
 		
 	VRAMHandle& operator=( VRAMHandle&& other ) noexcept 
 	{
@@ -55,5 +62,4 @@ public:
 
 		return *this;
 	}
-
 };

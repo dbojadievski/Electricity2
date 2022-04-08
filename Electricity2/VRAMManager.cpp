@@ -115,6 +115,11 @@ VRAMManager::CreatePreferredVRAMPoolForType( const uint32 uSize, const VRAMAlloc
 			pPool		= new BlockStorageVRAMPool( uSize );
 			break;
 		}
+		case VRAMAllocType::RenderTarget:
+		{
+			pPool		= new SingleResourceVRAMPool( uSize );
+			break;
+		}
 		case VRAMAllocType::Default:
 		{
 			pPool		= new SingleResourceVRAMPool( uSize );

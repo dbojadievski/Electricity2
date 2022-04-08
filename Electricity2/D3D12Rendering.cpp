@@ -11,11 +11,15 @@
 #include <iostream>
 #include "d3dx12.h"
 #include "Heap.h"
+#include "VRAMHandle.h"
+#include "VRAMPool.h"
+using namespace Electricity::Rendering;
 
 #pragma comment(lib, "windowscodecs.lib")
 #pragma comment(lib, "dxgi.lib") 
 #pragma comment(lib, "d3d12.lib")
 
+using namespace Electricity::Rendering;
 
 void
 Electricity::Rendering::PAR::Platform_Initialize() noexcept
@@ -316,13 +320,72 @@ PCD3D12Rendering::CreateRenderTarget( const uint32 uWidth, const uint32 uHeight,
 	resourceDesc.Flags = D3D12_RESOURCE_FLAG_ALLOW_RENDER_TARGET;
 	resourceDesc.SampleDesc = sampleDesc;
 	resourceDesc.DepthOrArraySize = 1;
+
 	D3D12_CLEAR_VALUE value = {};
 	value.Format = format;
 		
 	HRESULT hResult = s_pDevice->CreateCommittedResource( &heapProps, D3D12_HEAP_FLAG_ALLOW_DISPLAY, &resourceDesc, D3D12_RESOURCE_STATE_RENDER_TARGET, &value, IID_PPV_ARGS( &pResource ) );
 	assert( hResult == S_OK );
 
+	const auto& allocInfo = s_pDevice->GetResourceAllocationInfo( 0, 1, &resourceDesc );
+
 	return pResource;
+}
+
+uint64
+PCD3D12Rendering::CreateRenderTarget( const RenderTarget& xTarget ) noexcept
+{
+	uint64 uTargetSize = 0;
+
+	ComPtr<ID3D12Resource1> pResource = nullptr;
+
+	const RenderTargetDescriptor& xDescriptor = xTarget.GetDescriptor();
+	const RenderTargetHandle& xHandle = xTarget.GetHandle();
+
+	D3D12_HEAP_PROPERTIES xHeapProps = {};
+	xHeapProps.Type = D3D12_HEAP_TYPE_DEFAULT;
+
+	DXGI_SAMPLE_DESC xSampleDesc = { };
+	xSampleDesc.Count = xDescriptor.uSampleCount;
+	xSampleDesc.Quality = xDescriptor.uSampleQuality;
+
+	D3D12_RESOURCE_DESC resourceDesc = {};
+	resourceDesc.Dimension = D3D12_RESOURCE_DIMENSION_TEXTURE2D;
+	const auto xFormat = TranslateRenderTargetFormat( xDescriptor.xFormat );
+	resourceDesc.Format = xFormat;
+	resourceDesc.Width = xDescriptor.uWidth;
+	resourceDesc.Height = xDescriptor.uHeight;
+	resourceDesc.Layout = D3D12_TEXTURE_LAYOUT_UNKNOWN;
+	resourceDesc.Flags = D3D12_RESOURCE_FLAG_ALLOW_RENDER_TARGET;
+	resourceDesc.MipLevels = xDescriptor.uMipLevels;
+	resourceDesc.SampleDesc = xSampleDesc;
+	resourceDesc.DepthOrArraySize = 1;
+
+	D3D12_CLEAR_VALUE xClearValue = {};
+	xClearValue.Format = xFormat;
+	
+	HRESULT hResult = s_pDevice->CreateCommittedResource( &xHeapProps, D3D12_HEAP_FLAG_ALLOW_DISPLAY, &resourceDesc, D3D12_RESOURCE_STATE_RENDER_TARGET, &xClearValue, IID_PPV_ARGS( &pResource ) );
+	assert( hResult == S_OK );
+	if ( hResult == S_OK )
+	{
+		s_xRenderTargetMap.insert( MakePair( xHandle, pResource ) );
+		const auto& allocInfo = s_pDevice->GetResourceAllocationInfo( 0, 1, &resourceDesc );
+		uTargetSize = static_cast<uint64>( allocInfo.SizeInBytes );
+	}
+
+	return uTargetSize;
+}
+
+void
+PCD3D12Rendering::DeleteRenderTarget( const RenderTargetHandle& xTarget ) noexcept
+{
+	auto xIt = s_xRenderTargetMap.find( xTarget );
+	assert( xIt != s_xRenderTargetMap.cend());
+	
+	PPlatformRenderTarget pTarget = ( *xIt ).second;
+	s_xRenderTargetMap.erase( xIt );
+
+	pTarget->Release();
 }
 
 ComPtr<ID3D12CommandAllocator>
@@ -463,6 +526,72 @@ PCD3D12Rendering::IsVariableRefreshRateSupported() noexcept
 	BOOL bSupported = false;
 	s_pFactory->CheckFeatureSupport( DXGI_FEATURE_PRESENT_ALLOW_TEARING, &bSupported, sizeof( bSupported ) );
 	return static_cast<bool>( bSupported );
+}
+
+DXGI_FORMAT
+PCD3D12Rendering::TranslateRenderTargetFormat( const RenderTargetFormat& xFormat ) noexcept
+{
+	switch ( xFormat )
+	{
+		case RenderTargetFormat::R8_TYPELESS:
+			return DXGI_FORMAT_R8_TYPELESS;
+		case RenderTargetFormat::R8_UNORM:
+			return DXGI_FORMAT_R8_UNORM;
+		case RenderTargetFormat::R8_UINT:
+			return DXGI_FORMAT_R8_UINT;
+		case RenderTargetFormat::R8_SINT:
+			return DXGI_FORMAT_R8_SINT;
+		case RenderTargetFormat::R8_SNORM:
+			return DXGI_FORMAT_R8_SNORM;
+
+		case RenderTargetFormat::R8G8_TYPELESS:
+			return DXGI_FORMAT_R8G8_TYPELESS;
+		case RenderTargetFormat::R8G8_UNORM:
+			return DXGI_FORMAT_R8G8_UNORM;
+		case RenderTargetFormat::R8G8_UINT:
+			return DXGI_FORMAT_R8G8_UINT;
+		case RenderTargetFormat::R8G8_SINT:
+			return DXGI_FORMAT_R8G8_SINT;
+		case RenderTargetFormat::R8G8_SNORM:
+			return DXGI_FORMAT_R8G8_SNORM;
+
+		case RenderTargetFormat::R8G8B8A8_TYPELESS:
+			return DXGI_FORMAT_R8G8B8A8_TYPELESS;
+		case RenderTargetFormat::R8G8B8A8_UNORM:
+			return DXGI_FORMAT_R8G8B8A8_UNORM;
+		case RenderTargetFormat::R8G8B8A8_UINT:
+			return DXGI_FORMAT_R8G8B8A8_UINT;
+		case RenderTargetFormat::R8G8B8A8_SINT:
+			return DXGI_FORMAT_R8G8B8A8_SINT;
+		case RenderTargetFormat::R8G8B8A8_SNORM:
+			return DXGI_FORMAT_R8G8B8A8_SNORM;
+		case RenderTargetFormat::R8G8B8A8_UNORM_SRGB:
+			return DXGI_FORMAT_R8G8B8A8_UNORM_SRGB;
+
+		case RenderTargetFormat::R16G16_TYPELESS:
+			return DXGI_FORMAT_R16G16_TYPELESS;
+		case RenderTargetFormat::R16G16_UNORM:
+			return DXGI_FORMAT_R16G16_UNORM;
+		case RenderTargetFormat::R16G16_UINT:
+			return DXGI_FORMAT_R16G16_UINT;
+		case RenderTargetFormat::R16G16_SINT:
+			return DXGI_FORMAT_R16G16_SINT;
+		case RenderTargetFormat::R16G16_SNORM:
+			return DXGI_FORMAT_R16G16_SNORM;
+
+		case RenderTargetFormat::R32_TYPELESS:
+			return DXGI_FORMAT_R32_TYPELESS;
+		case RenderTargetFormat::R32_FLOAT:
+			return DXGI_FORMAT_R32_FLOAT;
+		case RenderTargetFormat::R32_UINT:
+			return DXGI_FORMAT_R32_UINT;
+		case RenderTargetFormat::R32_SINT:
+			return DXGI_FORMAT_R32_SINT;
+		case RenderTargetFormat::R24G8_TYPELESS:
+			return DXGI_FORMAT_R24G8_TYPELESS;
+		default:
+			return DXGI_FORMAT_R32G32B32A32_FLOAT;
+	}
 }
 
 ID3D12CommandQueue*

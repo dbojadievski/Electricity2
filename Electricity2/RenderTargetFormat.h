@@ -2,7 +2,7 @@
 
 #include "CoreTypes.h"
 
-namespace Electricity::Rendering::PAR
+namespace Electricity::Rendering
 {
 	/// <summary>
 	/// Render target formats. Add format as needed.

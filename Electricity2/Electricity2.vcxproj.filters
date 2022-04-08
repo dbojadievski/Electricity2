@@ -357,6 +357,15 @@
     <ClInclude Include="Command.h">
       <Filter>Header Files\Rendering\PAR</Filter>
     </ClInclude>
+    <ClInclude Include="RenderTarget.h">
+      <Filter>Header Files\Rendering\PAR</Filter>
+    </ClInclude>
+    <ClInclude Include="RenderTargetManager.h">
+      <Filter>Header Files\Rendering</Filter>
+    </ClInclude>
+    <ClInclude Include="RenderTargetHandle.h">
+      <Filter>Header Files\Rendering\PAR</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Electricity2.cpp">
@@ -481,6 +490,15 @@
     </ClCompile>
     <ClCompile Include="MemUtils.cpp">
       <Filter>Source Files\Core\Memory</Filter>
+    </ClCompile>
+    <ClCompile Include="RenderTarget.cpp">
+      <Filter>Source Files\Rendering\PAR</Filter>
+    </ClCompile>
+    <ClCompile Include="PlatformRenderTarget_D3D12.cpp">
+      <Filter>Source Files\Platform\Rendering\D3D12</Filter>
+    </ClCompile>
+    <ClCompile Include="RenderTargetManager.cpp">
+      <Filter>Source Files\Rendering</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

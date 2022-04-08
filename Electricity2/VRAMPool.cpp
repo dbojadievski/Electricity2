@@ -29,7 +29,7 @@ VRAMPool::~VRAMPool() noexcept
 
 // Class SingleResourceVRAMPool
 SingleResourceVRAMPool::SingleResourceVRAMPool( uint32 uSize ) noexcept : 
-	  VRAMPool( uSize )
+		VRAMPool( uSize )
 	, m_bIsFilled( false ) {}
 
 SingleResourceVRAMPool::~SingleResourceVRAMPool() noexcept 
@@ -98,8 +98,6 @@ BlockStorageVRAMPool::BlockStorageVRAMPool( uint32 uSize ) noexcept :
 	// Platform VRAM pool allocation is handled by parent class.
 	// All we have to do is organize the book-keeping.
 	
-	//uint32 uAllocSize	= Electricity::Math::Min( uSize, s_uBlockSize );
-	//uAllocSize = static_cast<uint32>( AlignBlockSize( uSize, s_uBlockSize ) );
 	uint32 uAllocSize = AlignBlockSize( uSize, s_uBlockSize );
 	m_uVRAMSize			= uAllocSize;
 	m_uVRAMGranularity	= s_uBlockSize;

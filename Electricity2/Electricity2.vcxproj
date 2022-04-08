@@ -190,7 +190,10 @@
     <ClInclude Include="PlatformUtils.h" />
     <ClInclude Include="PlatformVRAMPool.h" />
     <ClInclude Include="PlatformVRAMPool_PCD3D12.h" />
+    <ClInclude Include="RenderTarget.h" />
     <ClInclude Include="RenderTargetFormat.h" />
+    <ClInclude Include="RenderTargetHandle.h" />
+    <ClInclude Include="RenderTargetManager.h" />
     <ClInclude Include="Resource.h" />
     <ClInclude Include="SerializationSystem.h" />
     <ClInclude Include="SettingsSystem.h" />
@@ -252,12 +255,15 @@
     <ClCompile Include="PlatformDisplaySettings_Windows.cpp" />
     <ClCompile Include="PlatformFiber_Windows.cpp" />
     <ClCompile Include="PlatformMemory_Windows.cpp" />
+    <ClCompile Include="PlatformRenderTarget_D3D12.cpp" />
     <ClCompile Include="PlatformSwapChain_D3D12.cpp" />
     <ClCompile Include="PlatformThreadingDefines_Windows.cpp" />
     <ClCompile Include="PlatformThread_Windows.cpp" />
     <ClCompile Include="PlatformTime_Windows.cpp" />
     <ClCompile Include="PlatformUtils_Windows.cpp" />
     <ClCompile Include="PlatformVRAMPool_PCD3D12.cpp" />
+    <ClCompile Include="RenderTarget.cpp" />
+    <ClCompile Include="RenderTargetManager.cpp" />
     <ClCompile Include="SerializationSystem.cpp" />
     <ClCompile Include="SettingsSystem.cpp" />
     <ClCompile Include="SimpleMeshLoader.cpp" />
